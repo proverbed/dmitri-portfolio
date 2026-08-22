@@ -3,7 +3,7 @@ import type { MarkdownHeading } from "astro";
 
 interface Props {
   headings: readonly MarkdownHeading[];
-  /** Below this many top-level sections a contents list is noise. */
+  /** A contents list only earns its place past this many top-level sections. */
   threshold?: number;
 }
 
@@ -15,7 +15,7 @@ const { headings, threshold = 4 } = Astro.props;
 const sections = headings.filter(
   (heading) => heading.depth === 2 && heading.slug !== "footnote-label",
 );
-const show = sections.length >= threshold;
+const show = sections.length > threshold;
 ---
 
 {

@@ -5,29 +5,66 @@ import { SITE, SOCIALS } from "../lib/site";
 
 <Base
   title="About"
-  description="TODO: replace with a one-sentence description of this page for search results."
+  description="Full-stack engineer in Cape Town, fifteen years in, working mostly in TypeScript across the stack."
   width="measure"
 >
   <h1 class="page-title">About</h1>
 
   <div class="body">
     <p>
-      TODO: the longer bio. Who you are, what you work on now, and the kind of
-      problem you are usually brought in for. Three or four paragraphs, first
-      person.
+      I'm a full-stack engineer based in Cape Town, fifteen years in, working
+      mostly in TypeScript across the stack — React and Next.js on the front, AWS
+      serverless behind.
     </p>
-    <p>TODO: paragraph two.</p>
 
-    <h2>Career</h2>
     <p>
-      TODO: a short career summary. Roles, dates and what each one was actually
-      for — not a list of technologies.
+      I'm currently a Senior Engineer at Zebra Renewables, working on the UK side
+      of the business. I'm a core engineer on a commercial multi-tenant commerce
+      and ERP platform, where I designed the multi-tenant authentication, built
+      the per-website static-site build pipeline, and redesigned the CI/CD
+      promotion flow. I also line-manage two junior engineers. For most of my
+      first year there I kept the previous generation of the platform running in
+      production while we built its replacement — two systems at once, one of
+      them carrying live revenue.
+    </p>
+
+    <p>
+      Before that I spent nearly four years at Blackswan on inflight retail
+      across three airlines. The backend ran on a small machine installed on each
+      aircraft, syncing in scheduled windows between flights and activating above
+      a set altitude, with cabin crew taking orders on Bluetooth-paired handsets.
+      Fully offline for the duration of a flight, with no way to roll anything
+      back mid-air. It remains the most interesting set of constraints I've
+      worked under.
+    </p>
+
+    <p>
+      I also founded and ran Tradedeal, an e-commerce business, for five years —
+      two sales channels, my own inventory and order system, and every
+      operational decision landing on me. It taught me more about trade-offs than
+      any engineering role has.
+    </p>
+
+    <p>
+      Earlier: five and a half years at Ambition 24 Hours building an enterprise
+      system for a UK nursing agency, where I first led other developers.
+    </p>
+
+    <p>
+      BSc and BSc (Hons) in Computer Science, University of the Western Cape,
+      Dean's Merit List.
+    </p>
+
+    <p>
+      I care most about correctness in systems where being wrong costs someone
+      real money, and about making fast delivery safe rather than treating those
+      as a trade-off.
     </p>
 
     <h2>Elsewhere</h2>
     <ul class="links">
       {SOCIALS.map((social) => <li><a href={social.href} rel="me">{social.label}</a></li>)}
-      <li><a href={`mailto:${SITE.email}`}>Email</a></li>
+      <li><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
     </ul>
   </div>
 </Base>
@@ -43,24 +80,25 @@ import { SITE, SOCIALS } from "../lib/site";
   }
 
   .body h2 {
-    font-size: var(--text-h3);
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-muted);
     margin-block-start: calc(var(--spacing) * 12);
+    padding-block-start: calc(var(--spacing) * 6);
+    border-top: 1px solid var(--color-rule);
   }
 
   .body h2 + * {
-    margin-block-start: calc(var(--spacing) * 4);
+    margin-block-start: calc(var(--spacing) * 5);
   }
 
   .links {
-    padding-inline-start: calc(var(--spacing) * 5);
-    list-style: disc;
+    padding-inline-start: 0;
+    list-style: none;
   }
 
   .links li + li {
     margin-block-start: calc(var(--spacing) * 2);
-  }
-
-  .links li::marker {
-    color: var(--color-muted);
   }
 </style>

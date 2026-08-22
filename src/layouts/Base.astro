@@ -10,8 +10,9 @@ interface Props {
   publishDate?: Date;
   updatedDate?: Date;
   noindex?: boolean;
+  ogImage?: string;
   /** Article pages set the narrow measure; index pages get the wider one. */
-  width?: "measure" | "wide";
+  width?: "measure" | "wide" | "cards";
 }
 
 const {
@@ -21,10 +22,17 @@ const {
   publishDate,
   updatedDate,
   noindex,
+  ogImage,
   width = "wide",
 } = Astro.props;
 
-const container = width === "measure" ? "max-w-measure" : "max-w-wide";
+const CONTAINERS = {
+  measure: "max-w-measure",
+  wide: "max-w-wide",
+  cards: "max-w-cards",
+} as const;
+
+const container = CONTAINERS[width];
 const path = Astro.url.pathname.replace(/\/$/, "");
 ---
 
@@ -52,6 +60,7 @@ const path = Astro.url.pathname.replace(/\/$/, "");
       publishDate={publishDate}
       updatedDate={updatedDate}
       noindex={noindex}
+      ogImage={ogImage}
     />
     <slot name="head" />
   </head>
@@ -60,20 +69,20 @@ const path = Astro.url.pathname.replace(/\/$/, "");
     <a href="#main" class="skip-link">Skip to content</a>
 
     <div class={`mx-auto flex min-h-screen w-full flex-col px-5 sm:px-8 ${container}`}>
-      <header class="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2 py-8">
-        <a href="/" class="font-semibold no-underline" aria-current={path === "" ? "page" : undefined}>
+      <header class="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-4 py-8">
+        <a href="/" class="site-name" aria-current={path === "" ? "page" : undefined}>
           {SITE.name}
         </a>
 
         <nav aria-label="Primary">
-          <ul class="m-0 flex list-none gap-6 p-0 text-sm">
+          <ul class="nav-list">
             {
               NAV.map((item) => (
                 <li>
                   <a
                     href={item.href}
                     aria-current={path === item.href || path.startsWith(`${item.href}/`) ? "page" : undefined}
-                    class="no-underline aria-[current=page]:underline"
+                    class="nav-link"
                   >
                     {item.label}
                   </a>
@@ -94,6 +103,34 @@ const path = Astro.url.pathname.replace(/\/$/, "");
     </div>
 
     <style>
+      .site-name {
+        display: inline-block;
+        padding-block: calc(var(--spacing) * 1.5);
+        font-weight: 600;
+        text-decoration: none;
+      }
+
+      .nav-list {
+        display: flex;
+        gap: calc(var(--spacing) * 6);
+        margin: 0;
+        padding: 0;
+        list-style: none;
+        font-size: var(--text-sm);
+      }
+
+      /* Padded to clear the 24px minimum tap target on touch screens; the text
+         itself is only 21px tall at this size. */
+      .nav-link {
+        display: inline-block;
+        padding-block: calc(var(--spacing) * 1.5);
+        text-decoration: none;
+      }
+
+      .nav-link[aria-current="page"] {
+        text-decoration: underline;
+      }
+
       .skip-link {
         position: absolute;
         left: calc(var(--spacing) * 4);

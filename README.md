@@ -11,7 +11,8 @@ npm run sync:fonts   # vendor the latin font subsets into public/fonts
 npm run dev          # http://localhost:4321
 npm run build        # -> dist/
 npm run preview      # serve dist/
-npm run check        # astro check (TypeScript, strict)
+npm run check          # astro check (TypeScript, strict)
+npm run check:contrast # syntax colours vs code background, both themes
 ```
 
 ## Writing
@@ -36,10 +37,28 @@ one for review, run the dev server or deploy a preview branch.
 Components available inside MDX: `Figure` (with `bleed` for wide diagrams) and
 `Callout` (`note` / `warning` / `aside`). Import them from `../../components/`.
 Footnotes use GFM syntax and are styled as an apparatus at the end of the piece.
+Code fences get a language label and a copy button automatically.
 
-`src/content/writing/typography-proof.mdx` is a scratch page that exercises every
-element the article template renders. Keep it while iterating on the design;
-delete it before launch.
+## Case studies
+
+`src/content/work/*.mdx`. Ordered by the `order` field, not by date.
+`relatedWriting` holds writing slugs and is resolved at build time: a slug that
+names no article fails the build; one that names a draft is simply not shown.
+
+Every case study must carry exactly these level-2 headings, in this order:
+
+    Context / Constraints / What I built / Decisions and trade-offs / Outcome
+
+This is checked in `src/lib/work.ts` and **fails the build** if it drifts. Four
+pages a reader compares side by side are worth the rigidity.
+
+## OG images
+
+Generated at build time by `src/lib/og.ts` (satori → SVG, resvg → PNG) and served
+from `/og/<slug>.png` and `/og/work/<slug>.png`. The fonts are read straight out
+of `@fontsource/source-serif-4` at build time — satori cannot decode woff2, which
+is why that package (static, ships `.woff`) sits alongside the variable one used
+by the browser.
 
 ## Design tokens
 
@@ -52,13 +71,23 @@ through the markup.
 Fonts are self-hosted and vendored into `public/fonts` by `scripts/sync-fonts.mjs`
 from the `@fontsource*` packages — no third-party font CDN at runtime.
 
+## Measured
+
+Lighthouse on the article page, against `npm run preview`, with a representative
+published article (prose, two code blocks, a table, callouts, footnotes):
+
+| | Performance | Accessibility | Best practices | SEO |
+| --- | --- | --- | --- | --- |
+| Desktop | 100 | 100 | 100 | 100 |
+| Mobile | 100 | 100 | 100 | 100 |
+
+Every article is currently a draft, so re-run it against a real post before
+trusting those numbers again: `npx lighthouse <url> --preset=desktop`.
+
 ## Before first deploy
 
-- [ ] Replace the `TODO:` values in `src/lib/site.ts` (name, URL, role, email, socials)
-- [ ] Replace the `TODO:` copy on `/` and `/about`
-- [ ] Update the sitemap URL in `public/robots.txt`
 - [ ] Replace `public/favicon.svg`
-- [ ] Delete `src/content/writing/typography-proof.mdx`
+- [ ] Point DNS at the host and confirm `SITE.url` in `src/lib/site.ts`
 
 ## Deploying
 

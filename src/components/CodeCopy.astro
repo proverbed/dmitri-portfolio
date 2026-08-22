@@ -1,0 +1,51 @@
+---
+/**
+ * The one piece of client JavaScript on the site.
+ *
+ * It is a single delegated listener rather than a component per code block, and
+ * it injects the buttons itself — so a reader without JavaScript never sees a
+ * control that cannot work. Inline and tiny enough that it costs no request.
+ */
+---
+
+<script is:inline>
+  (() => {
+    const blocks = document.querySelectorAll("pre.astro-code");
+    if (blocks.length === 0 || !navigator.clipboard) return;
+
+    for (const block of blocks) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "code-copy";
+      button.textContent = "Copy";
+      button.setAttribute("aria-label", "Copy code to clipboard");
+      block.parentElement?.appendChild(button);
+    }
+
+    let resetTimer;
+
+    document.addEventListener("click", async (event) => {
+      const button = event.target.closest(".code-copy");
+      if (!button) return;
+
+      const code = button.parentElement?.querySelector("pre.astro-code code");
+      if (!code) return;
+
+      try {
+        await navigator.clipboard.writeText(code.textContent ?? "");
+        button.textContent = "Copied";
+        button.dataset.state = "done";
+      } catch {
+        // Clipboard access can be refused outright; say so rather than lying.
+        button.textContent = "Press Ctrl+C";
+        button.dataset.state = "failed";
+      }
+
+      clearTimeout(resetTimer);
+      resetTimer = setTimeout(() => {
+        button.textContent = "Copy";
+        delete button.dataset.state;
+      }, 2000);
+    });
+  })();
+</script>

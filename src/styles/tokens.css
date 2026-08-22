@@ -10,6 +10,7 @@
   --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Type scale. Body sits at 18px and never shrinks; headings are fluid. */
+  --text-label: 0.75rem;
   --text-xs: 0.8125rem;
   --text-sm: 0.9375rem;
   --text-base: 1.125rem;
@@ -28,6 +29,7 @@
   /* Measure. 68ch is ~68-74 characters at this face and size. */
   --container-measure: 68ch;
   --container-wide: 78ch;
+  --container-cards: 62rem;
 
   --spacing: 0.25rem;
 
@@ -44,12 +46,23 @@
   --color-accent-hover: oklch(0.38 0.13 250);
   --color-code-bg: oklch(0.965 0.004 95);
   --color-focus: oklch(0.55 0.16 250);
+
+  /* Fixed across themes: the OG image is rendered once, at build time, and is
+   * viewed inside someone else's dark or light UI regardless. */
+  --color-brand-bg: oklch(0.19 0.008 260);
+  --color-brand-ink: oklch(0.96 0.008 95);
 }
 
 /* Dark theme. Same token names, redefined once. Nothing else in the codebase
- * is aware that dark mode exists. */
+ * is aware that dark mode exists.
+ *
+ * These are plain custom properties rather than a second `@theme` block:
+ * `@theme` is hoisted out of any at-rule it is nested in, so a `@theme` inside
+ * this media query would apply the dark palette unconditionally. Tailwind's
+ * utilities compile to `var(--color-*)` lookups, so overriding the properties
+ * here is enough for every utility and every hand-written rule alike. */
 @media (prefers-color-scheme: dark) {
-  @theme {
+  :root {
     --color-bg: oklch(0.19 0.008 260);
     --color-surface: oklch(0.235 0.009 260);
     --color-text: oklch(0.92 0.008 95);

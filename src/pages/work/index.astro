@@ -1,0 +1,49 @@
+---
+import Base from "../../layouts/Base.astro";
+import WorkCard from "../../components/WorkCard.astro";
+import { getCaseStudies } from "../../lib/work";
+
+const studies = await getCaseStudies();
+---
+
+<Base
+  title="Work"
+  description="Selected work: a multi-tenant commerce platform, an aircraft edge fleet, a retail business, and an enterprise scheduling system."
+  width="cards"
+>
+  <h1 class="page-title">Work</h1>
+  <p class="intro">
+    Four systems, in reverse order. Each one covers what it was for, what made it
+    hard, and what I would tell someone starting the same job.
+  </p>
+
+  <ul class="grid">
+    {studies.map((entry) => <li><WorkCard entry={entry} /></li>)}
+  </ul>
+</Base>
+
+<style>
+  .page-title {
+    font-size: var(--text-h1);
+  }
+
+  .intro {
+    max-width: var(--container-measure);
+    margin-block: calc(var(--spacing) * 4) calc(var(--spacing) * 10);
+    color: var(--color-muted);
+  }
+
+  .grid {
+    display: grid;
+    gap: calc(var(--spacing) * 5);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 48rem) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

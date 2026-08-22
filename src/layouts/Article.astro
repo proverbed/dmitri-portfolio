@@ -5,6 +5,7 @@ import type { CollectionEntry } from "astro:content";
 import Base from "./Base.astro";
 import Prose from "../components/Prose.astro";
 import Tags from "../components/Tags.astro";
+import CodeCopy from "../components/CodeCopy.astro";
 import Toc from "../components/Toc.astro";
 import { formatDate, isoDate } from "../lib/format";
 import { SITE } from "../lib/site";
@@ -26,6 +27,7 @@ const { entry, headings, minutes, prev, next } = Astro.props;
 const { title, description, publishDate, updatedDate, tags, draft } = entry.data;
 
 const canonical = new URL(`/writing/${entry.id}`, Astro.site ?? SITE.url).href;
+const ogImage = new URL(`/og/${entry.id}.png`, Astro.site ?? SITE.url).href;
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -38,6 +40,7 @@ const jsonLd = {
   publisher: { "@type": "Person", name: SITE.name, url: SITE.url },
   mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
   url: canonical,
+  image: ogImage,
   ...(tags.length > 0 ? { keywords: tags.join(", ") } : {}),
   inLanguage: SITE.locale,
 };
@@ -50,6 +53,7 @@ const jsonLd = {
   publishDate={publishDate}
   updatedDate={updatedDate}
   noindex={draft}
+  ogImage={ogImage}
   width="measure"
 >
   <script
@@ -91,6 +95,8 @@ const jsonLd = {
       <slot />
     </Prose>
   </article>
+
+  <CodeCopy />
 
   {
     (prev || next) && (

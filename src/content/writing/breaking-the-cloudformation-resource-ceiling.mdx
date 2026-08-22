@@ -1,29 +1,19 @@
 ---
 title: "Breaking the CloudFormation resource ceiling"
-description: "A nested-stack migration on a stack pressed against the 500-resource limit — including the phase that failed and had to be reverted."
+description: "A nested-stack migration in three phases, one of which had to be reverted"
 publishDate: 2026-06-05
-tags: ["aws", "infrastructure", "postmortem"]
+tags: ["aws", "cloudformation", "infrastructure"]
 draft: true
 ---
 
-TODO: opening — the deploy that failed and the limit it hit.
+## Hitting a hard limit
 
-## How a stack reaches 500 resources without anyone deciding to
+## Why consolidation only bought us time
 
-TODO: the accretion, and the resources that are generated rather than written.
+## Designing the split
 
-## Why the obvious splits are the wrong splits
+## Phase one, and why we rolled it back
 
-TODO: splitting by service versus splitting by change frequency.
+## What made the second attempt work
 
-## Phase one: the extraction that worked
-
-TODO: what moved, and how the cutover preserved physical resource IDs.
-
-## Phase two: the extraction that had to be reverted
-
-TODO: what broke, why the revert itself was risky, and what the recovery cost.
-
-## What the limit was actually telling us
-
-TODO: the ceiling as a symptom rather than the problem.
+## What I'd tell someone approaching this

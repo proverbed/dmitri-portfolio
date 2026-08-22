@@ -13,4 +13,21 @@ const writing = defineCollection({
   }),
 });
 
-export const collections = { writing };
+const work = defineCollection({
+  loader: glob({ base: "./src/content/work", pattern: "**/*.mdx" }),
+  schema: z.object({
+    title: z.string().min(1).max(120),
+    summary: z.string().min(1).max(200),
+    /** Human-readable span, e.g. "2025–present". */
+    period: z.string().min(1),
+    /** The two or three that matter — not an inventory. */
+    tech: z.array(z.string().min(1)).min(1).max(8),
+    /** Ascending; the index is ordered by this, not by date. */
+    order: z.number().int(),
+    /** Slugs in the writing collection this case study relates to. */
+    relatedWriting: z.array(z.string().min(1)).default([]),
+    draft: z.boolean().default(false),
+  }),
+});
+
+export const collections = { writing, work };

@@ -1,0 +1,161 @@
+---
+import { getEntry } from "astro:content";
+
+import Base from "./Base.astro";
+import Prose from "../components/Prose.astro";
+import { SITE } from "../lib/site";
+import type { CaseStudy } from "../lib/work";
+
+interface Props {
+  entry: CaseStudy;
+}
+
+const { entry } = Astro.props;
+const { title, summary, period, tech, relatedWriting } = entry.data;
+
+// Cross-links resolve against the writing collection at build time. A slug that
+// names no article is a mistake in this file and fails the build; a slug that
+// names a draft is simply not shown yet, which is the normal case while the
+// related piece is still being written.
+const related = (
+  await Promise.all(
+    relatedWriting.map(async (slug) => {
+      const article = await getEntry("writing", slug);
+      if (!article) {
+        throw new Error(
+          `Case study "${entry.id}" links to writing/"${slug}", which does not exist.`,
+        );
+      }
+      return article;
+    }),
+  )
+).filter((article) => !article.data.draft);
+
+const ogImage = new URL(`/og/work/${entry.id}.png`, Astro.site ?? SITE.url).href;
+---
+
+<Base title={title} description={summary} width="measure" ogImage={ogImage}>
+  <article>
+    <header class="case-header">
+      <p class="breadcrumb"><a href="/work">Work</a></p>
+      <h1>{title}</h1>
+      <p class="summary">{summary}</p>
+
+      <dl class="facts">
+        <div>
+          <dt>Period</dt>
+          <dd>{period}</dd>
+        </div>
+        <div>
+          <dt>Stack</dt>
+          <dd>{tech.join(" · ")}</dd>
+        </div>
+      </dl>
+    </header>
+
+    <Prose>
+      <slot />
+    </Prose>
+  </article>
+
+  {
+    related.length > 0 && (
+      <aside class="related" aria-labelledby="related-writing">
+        <h2 id="related-writing">Related writing</h2>
+        <ul>
+          {related.map((article) => (
+            <li>
+              <a href={`/writing/${article.id}`}>{article.data.title}</a>
+              <p>{article.data.description}</p>
+            </li>
+          ))}
+        </ul>
+      </aside>
+    )
+  }
+</Base>
+
+<style>
+  .breadcrumb {
+    font-size: var(--text-sm);
+    margin-block-end: calc(var(--spacing) * 3);
+  }
+
+  .case-header {
+    margin-block-end: calc(var(--spacing) * 10);
+  }
+
+  .case-header h1 {
+    font-size: var(--text-h1);
+  }
+
+  .summary {
+    margin-block-start: calc(var(--spacing) * 4);
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+    color: var(--color-muted);
+    text-wrap: pretty;
+  }
+
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--spacing) * 8);
+    margin-block: calc(var(--spacing) * 6) 0;
+    padding-block-start: calc(var(--spacing) * 5);
+    border-top: 1px solid var(--color-rule);
+    font-size: var(--text-sm);
+  }
+
+  .facts dt {
+    color: var(--color-muted);
+    font-size: var(--text-label);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .facts dd {
+    margin: calc(var(--spacing) * 1) 0 0;
+  }
+
+  .related {
+    margin-block-start: calc(var(--spacing) * 16);
+    padding-block-start: calc(var(--spacing) * 6);
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .related h2 {
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-muted);
+  }
+
+  .related ul {
+    list-style: none;
+    margin: calc(var(--spacing) * 5) 0 0;
+    padding: 0;
+  }
+
+  .related li + li {
+    margin-block-start: calc(var(--spacing) * 5);
+  }
+
+  .related a {
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--color-text);
+  }
+
+  .related a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .related p {
+    margin-block-start: calc(var(--spacing) * 1);
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
+    color: var(--color-muted);
+  }
+</style>

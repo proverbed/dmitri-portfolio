@@ -1,0 +1,95 @@
+---
+import type { CaseStudy } from "../lib/work";
+
+interface Props {
+  entry: CaseStudy;
+}
+
+const { entry } = Astro.props;
+const { title, summary, period, tech } = entry.data;
+---
+
+<article class="card">
+  <h2>
+    {/* The heading link is the whole target: no redundant "read more" for a
+        screen reader to announce twice. */}
+    <a href={`/work/${entry.id}`}>{title}</a>
+  </h2>
+  <p class="period">{period}</p>
+  <p class="summary">{summary}</p>
+  <ul class="tech" aria-label="Key technologies">
+    {tech.map((item) => <li>{item}</li>)}
+  </ul>
+</article>
+
+<style>
+  .card {
+    display: flex;
+    flex-direction: column;
+    gap: calc(var(--spacing) * 2);
+    height: 100%;
+    padding: calc(var(--spacing) * 6);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-md);
+    background-color: var(--color-surface);
+  }
+
+  .card:hover {
+    border-color: var(--color-accent);
+  }
+
+  .card h2 {
+    font-size: var(--text-h3);
+  }
+
+  .card h2 a {
+    color: var(--color-text);
+    text-decoration: none;
+  }
+
+  /* Whole-card hit area without wrapping a block in an anchor. */
+  .card h2 a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+
+  .card {
+    position: relative;
+  }
+
+  .card h2 a:hover {
+    color: var(--color-accent);
+  }
+
+  .period {
+    font-size: var(--text-label);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-muted);
+  }
+
+  .summary {
+    color: var(--color-muted);
+    line-height: var(--leading-snug);
+    text-wrap: pretty;
+  }
+
+  .tech {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--spacing) * 2);
+    margin: auto 0 0;
+    padding: calc(var(--spacing) * 4) 0 0;
+    list-style: none;
+    font-size: var(--text-label);
+    color: var(--color-muted);
+  }
+
+  .tech li {
+    padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 2);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-mono);
+  }
+</style>

@@ -92,6 +92,16 @@
   samp {
     font-family: var(--font-mono);
     font-size: 0.875em;
+    /* JetBrains Mono ligates !== and friends into single glyphs. In prose about
+       code, the reader needs to see the operator that is actually written. */
+    font-variant-ligatures: none;
+    font-feature-settings: "calt" 0, "liga" 0;
+  }
+
+  /* Nested `code` inside `pre` would otherwise compound the two 0.875em steps
+     down to ~13.8px, which is below what anyone should have to read code at. */
+  pre code {
+    font-size: inherit;
   }
 
   img,

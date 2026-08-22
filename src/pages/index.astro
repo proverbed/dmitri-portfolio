@@ -3,30 +3,47 @@ import Base from "../layouts/Base.astro";
 import { formatDate, isoDate } from "../lib/format";
 import { SITE } from "../lib/site";
 import { getArticles } from "../lib/writing";
+import { getCaseStudies } from "../lib/work";
 
-const articles = (await getArticles()).slice(0, 4);
+const articles = (await getArticles()).slice(0, 3);
+const studies = (await getCaseStudies()).slice(0, 4);
 ---
 
 <Base title={SITE.name} description={SITE.description} width="measure">
   <h1 class="name">{SITE.name}</h1>
   <p class="positioning">{SITE.role}</p>
 
-  <div class="intro">
-    <p>
-      TODO: two or three sentences of substance. What you build, the constraint you
-      are usually hired for, and one concrete thing you have shipped. Written in
-      the first person, no adjectives you would not defend in an interview.
-    </p>
-    <p>
-      TODO: a second paragraph if the first cannot carry it. Delete this one if it
-      can.
-    </p>
-  </div>
+  <p class="intro">
+    I build and run event-driven systems on AWS in TypeScript, end to end. Right
+    now that means a multi-tenant commerce platform — seventeen serverless
+    services, a Next.js admin app and an Astro storefront — where I own the
+    multi-tenant authentication, the per-tenant site build pipeline and the
+    CI/CD promotion flow. Before that I spent four years on inflight retail
+    software deployed to hardware on aircraft, and five years running my own
+    e-commerce business. I write here occasionally about the parts of the work
+    that were harder than they looked.
+  </p>
 
-  <section class="writing" aria-labelledby="recent-writing">
+  <section class="route" aria-labelledby="selected-work">
+    <h2 id="selected-work">Selected work</h2>
+    <ul class="work-list">
+      {
+        studies.map((study) => (
+          <li>
+            <a href={`/work/${study.id}`}>{study.data.title}</a>
+            <span class="period">{study.data.period}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  <section class="route" aria-labelledby="recent-writing">
     <h2 id="recent-writing">Writing</h2>
 
-    <ul>
+    {articles.length === 0 && <p class="empty">Nothing published yet.</p>}
+
+    <ul class="writing-list">
       {
         articles.map((article) => (
           <li>
@@ -40,7 +57,7 @@ const articles = (await getArticles()).slice(0, 4);
       }
     </ul>
 
-    <p class="all-writing"><a href="/writing">All writing</a></p>
+    <p class="more"><a href="/writing">All writing</a></p>
   </section>
 </Base>
 
@@ -57,62 +74,82 @@ const articles = (await getArticles()).slice(0, 4);
   }
 
   .intro {
-    margin-block-start: calc(var(--spacing) * 8);
+    margin-block-start: calc(var(--spacing) * 7);
   }
 
-  .intro > p + p {
-    margin-block-start: calc(var(--spacing) * 5);
-  }
-
-  .writing {
-    margin-block-start: calc(var(--spacing) * 14);
-    padding-block-start: calc(var(--spacing) * 8);
+  /* The two routes in are separated by a rule rather than by decoration: a
+     visitor should see two lists and know immediately which is which. */
+  .route {
+    margin-block-start: calc(var(--spacing) * 12);
+    padding-block-start: calc(var(--spacing) * 6);
     border-top: 1px solid var(--color-rule);
   }
 
-  .writing h2 {
+  .route h2 {
     font-size: var(--text-sm);
     text-transform: uppercase;
     letter-spacing: 0.06em;
     color: var(--color-muted);
   }
 
-  .writing ul {
+  .route ul {
     list-style: none;
-    margin: calc(var(--spacing) * 6) 0 0;
+    margin: calc(var(--spacing) * 5) 0 0;
     padding: 0;
   }
 
-  .writing li + li {
-    margin-block-start: calc(var(--spacing) * 6);
-  }
-
-  .writing li > a {
+  .route a {
     font-weight: 600;
     text-decoration: none;
     color: var(--color-text);
   }
 
-  .writing li > a:hover {
+  .route a:hover {
     color: var(--color-accent);
     text-decoration: underline;
   }
 
-  .writing li p {
-    color: var(--color-muted);
-    line-height: var(--leading-snug);
-    margin-block-start: calc(var(--spacing) * 1);
+  .work-list li {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: calc(var(--spacing) * 3);
+    padding-block: calc(var(--spacing) * 2);
   }
 
-  .writing time {
+  .work-list li + li {
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .period {
+    font-size: var(--text-label);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-muted);
+  }
+
+  .writing-list li + li {
+    margin-block-start: calc(var(--spacing) * 5);
+  }
+
+  .writing-list p {
+    margin-block-start: calc(var(--spacing) * 1);
+    color: var(--color-muted);
+    line-height: var(--leading-snug);
+  }
+
+  .writing-list time {
     display: block;
     margin-block-start: calc(var(--spacing) * 1);
     font-size: var(--text-sm);
     color: var(--color-muted);
   }
 
-  .all-writing {
-    margin-block-start: calc(var(--spacing) * 8);
+  .empty,
+  .more {
+    margin-block-start: calc(var(--spacing) * 5);
     font-size: var(--text-sm);
+    color: var(--color-muted);
   }
 </style>

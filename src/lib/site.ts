@@ -1,24 +1,24 @@
-export interface SocialLink {
+export interface Link {
   readonly label: string;
   readonly href: string;
 }
 
 export const SITE = {
-  // TODO: replace with the production domain before first deploy.
-  url: "https://example.com",
-  name: "TODO: Your Name",
-  role: "TODO: one-line positioning",
-  description: "TODO: site-level meta description (155 characters or fewer).",
+  url: "https://dmitrideklerk.com",
+  name: "Dmitri De Klerk",
+  role: "Senior engineer. Fifteen years building systems that have to work.",
+  description: "Senior engineer, Cape Town. Writing about systems that have to work.",
   locale: "en-GB",
-  email: "TODO: you@example.com",
+  email: "dmitriwarren@gmail.com",
 } as const;
 
-export const SOCIALS: readonly SocialLink[] = [
-  { label: "GitHub", href: "https://github.com/TODO" },
-  { label: "LinkedIn", href: "https://www.linkedin.com/in/TODO" },
+export const SOCIALS: readonly Link[] = [
+  { label: "GitHub", href: "https://github.com/proverbed" },
+  { label: "LinkedIn", href: "https://linkedin.com/in/dmitri-de-klerk-b78a41160" },
 ];
 
-export const NAV: readonly SocialLink[] = [
+export const NAV: readonly Link[] = [
+  { label: "Work", href: "/work" },
   { label: "Writing", href: "/writing" },
   { label: "About", href: "/about" },
 ];

@@ -1,29 +1,19 @@
 ---
 title: "Shipping software to aircraft"
-description: "Deploying to hardware that syncs on a schedule, runs disconnected for hours, and cannot be rolled back mid-flight."
+description: "What edge deployment teaches you when there's no rollback at 30,000 feet"
 publishDate: 2026-08-01
-tags: ["edge", "deployment", "reliability"]
+tags: ["edge", "deployment", "ansible", "architecture"]
 draft: true
 ---
 
-TODO: opening — the constraint stated plainly, before any context.
+## The constraint
 
-## The deployment window is the system
+## What "offline" actually means
 
-TODO: sync windows, what they are, and why everything else is downstream of them.
+## Scheduled sync windows, and what happens when one is missed
 
-## What "no rollback" actually removes
+## Why we gated on altitude
 
-TODO: the practices that quietly assume a rollback exists, and what replaces each one.
+## Deploying to a fleet by hand, and why that stopped working
 
-## Versioning when the fleet is never uniform
-
-TODO: skew between aircraft, and why the schema is the real contract.
-
-## Testing against a fleet you cannot reach
-
-TODO: the simulation rig, what it caught, what it never could.
-
-## What I would do differently
-
-TODO: the honest retrospective.
+## What I'd do differently

@@ -1,0 +1,77 @@
+---
+title: "Multi-tenant commerce and ERP platform"
+summary: "Rebuilding a proof-of-concept-turned-production platform into a multi-tenant estate, while the original kept trading."
+period: "2025–present"
+tech: ["TypeScript", "AWS serverless", "Next.js"]
+order: 1
+relatedWriting: ["breaking-the-cloudformation-resource-ceiling", "verification-is-the-constraint"]
+---
+
+## Context
+
+A commercial platform that gives a client everything needed to trade online: a
+storefront, and the back office behind it — catalogue, orders, stock,
+fulfilment, accounting integrations — sold on a subscription.
+
+It replaced an earlier system that had begun life as a proof of concept and,
+without anyone deciding it should, become the company's live production
+platform. That history is the whole shape of the project: the thing being
+replaced was not a prototype anyone could switch off.
+
+## Constraints
+
+The predecessor carried live revenue for the entire duration of the rebuild. It
+had to keep running, and keep being fixed, while its replacement was built.
+
+The second constraint was structural rather than operational. The old system had
+been built for one business. The new one had to serve many from a single estate —
+which is not a feature you add, but an assumption that has to hold in every
+table, every identity check and every deployment.
+
+## What I built
+
+Multi-tenant authentication on Cognito: passkeys, trusted-device recognition and
+one-time codes, over a fail-closed entitlements model — a request that cannot be
+positively resolved to a tenant and a permission is refused rather than allowed
+through on a default.
+
+A per-website static-site build pipeline, in which one render engine serves both
+the production build and the admin preview. That was the point of it: two render
+paths would eventually disagree, and the disagreement would surface as an
+operator publishing something they had not seen.
+
+An integration adapter registry spanning payment gateways, couriers and
+accounting systems, so a new provider is a new adapter rather than a new branch
+in shared code.
+
+A redesigned CI/CD promotion flow with affected-service detection, so a change
+deploys what it touches instead of everything.
+
+## Decisions and trade-offs
+
+**Static per-tenant builds rather than one multi-tenant SSR application.** A
+shared SSR layer makes every request a place where the wrong tenant's data can
+be served. Static builds make that class of mistake structurally hard: the
+tenant is resolved once, at build time, not on every request under load. The
+cost is that content changes require a build, and the pipeline becomes something
+that must be operated rather than merely deployed.
+
+**Services communicate through streams and queues, never by calling each other
+directly.** Direct calls in the request path make one service's latency
+everyone's latency, and one service's outage everyone's outage. Events cost
+ordering guarantees and make some flows harder to follow end to end; that was
+the trade I wanted.
+
+**A passwordless auth chain.** Chosen on its own merits — no password database,
+no reset flow, no credential reuse. The consequence I did not anticipate was
+that it removed the hardest part of the data migration entirely: there were no
+password hashes to carry across, so user migration stopped being a security
+problem and became an ordinary data problem.
+
+## Outcome
+
+Delivered to production while the predecessor continued trading throughout. The
+work consolidated the predecessor's repositories into a single estate — a net
+removal of code rather than an addition.
+
+I also line-manage two junior engineers on this team.

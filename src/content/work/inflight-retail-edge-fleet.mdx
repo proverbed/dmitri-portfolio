@@ -1,0 +1,68 @@
+---
+title: "Inflight retail on an aircraft edge fleet"
+summary: "Retail software running on hardware installed on aircraft, syncing only between flights and fully offline in the air."
+period: "2017–2021"
+tech: ["TypeScript", "GraphQL", "Ansible"]
+order: 2
+relatedWriting: ["shipping-software-to-aircraft"]
+---
+
+## Context
+
+An inflight retail platform serving three airlines. Passengers browsed a
+catalogue and ordered from their seat; cabin crew took and fulfilled those
+orders in the air, on handsets paired over Bluetooth.
+
+Two clients, two very different users, one backend — and that backend was not in
+a data centre.
+
+## Constraints
+
+It ran on a small machine installed on each aircraft. Every assumption that
+comes free in a cloud deployment had to be re-examined.
+
+Synchronisation happened only in scheduled windows between flights. Outside
+those windows the aircraft was unreachable: no deploy, no configuration change,
+no lookup against anything central.
+
+For the duration of a flight the system was fully offline, and nothing could be
+rolled back mid-air. Whatever was on the aircraft when the doors closed was what
+served the flight.
+
+## What I built
+
+Frontend features and the shared component library used across the passenger and
+crew clients.
+
+Backend services, and the GraphQL schema and resolvers serving both clients from
+one contract — one schema, two consumers with very different access and very
+different failure tolerance.
+
+Deployment automation with Ansible. Releases had been run by hand, per airline;
+that worked until fleet size made it the bottleneck, at which point it was
+replaced with something repeatable.
+
+## Decisions and trade-offs
+
+**Altitude-gated activation.** The system became available above a set altitude
+rather than on a manual action, which removed a step from the crew's workflow
+and a class of "someone forgot" failures — at the cost of the gate itself
+becoming a thing that could be wrong.
+
+**Designing for the missed sync window.** A device that misses its window is not
+an error state, it is a normal Tuesday. That means the on-aircraft system has to
+be correct while stale, and reconciliation on the next successful sync has to
+assume divergence rather than treat it as exceptional.
+
+**Getting diagnostics off the aircraft.** When the only copy of the logs is on
+the machine you cannot reach, observability stops being a dashboard and becomes
+a data-transfer problem: deciding in advance what is worth carrying home through
+a narrow window, given you will not get to ask a follow-up question.
+
+## Outcome
+
+Ran across three airlines' fleets. The deployment automation replaced a manual
+per-airline release process.
+
+It remains the most interesting set of constraints I have worked under, and most
+of what I believe about deployment safety comes from it.
