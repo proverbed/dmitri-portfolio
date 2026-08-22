@@ -6,7 +6,9 @@ export interface Link {
 export const SITE = {
   url: "https://dmitrideklerk.com",
   name: "Dmitri De Klerk",
-  role: "Senior engineer. Fifteen years building systems that have to work.",
+  /** The masthead carries the name, so the landing headline carries the claim. */
+  thesis: "Fifteen years building systems that have to work",
+  role: "Senior engineer, Cape Town",
   description: "Senior engineer, Cape Town. Writing about systems that have to work.",
   locale: "en-GB",
   email: "dmitriwarren@gmail.com",

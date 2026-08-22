@@ -1,6 +1,7 @@
 ---
 import Base from "../layouts/Base.astro";
 import RoleEntry from "../components/RoleEntry.astro";
+import Section from "../components/Section.astro";
 import { EDUCATION, ROLES, UNIVERSITY } from "../lib/cv";
 import { encodeMailto, encodeText } from "../lib/email";
 import { SITE, SOCIALS } from "../lib/site";
@@ -46,9 +47,12 @@ const jsonLd = {
     set:html={JSON.stringify(jsonLd)}
   />
 
-  <h1 class="page-title">About</h1>
+  <header class="head">
+    <h1>About</h1>
+  </header>
 
-  <div class="bio">
+  <Section label="Profile" id="profile" first>
+    <div class="bio">
     <p>
       I'm a full-stack engineer based in Cape Town, fifteen years in, working
       mostly in TypeScript across the stack — React and Next.js on the front, AWS
@@ -98,16 +102,14 @@ const jsonLd = {
       real money, and about making fast delivery safe rather than treating those
       as a trade-off.
     </p>
-  </div>
+    </div>
+  </Section>
 
-  <section class="section" aria-labelledby="career">
-    <h2 id="career">Career</h2>
+  <Section label="Career" id="career">
     {ROLES.map((role) => <RoleEntry role={role} />)}
-  </section>
+  </Section>
 
-  <section class="section" aria-labelledby="education">
-    <h2 id="education">Education</h2>
-
+  <Section label="Education" id="education">
     <dl class="education">
       {
         EDUCATION.map((qualification) => (
@@ -131,24 +133,23 @@ const jsonLd = {
         ))
       }
     </dl>
-  </section>
+  </Section>
 
-  <section class="section" aria-labelledby="contact">
-    <h2 id="contact">Contact</h2>
+  <Section label="Contact" id="contact">
     <p set:html={contactLine} />
-  </section>
+  </Section>
 </Base>
 
 <style>
-  .page-title {
+  .head {
+    max-width: calc(var(--margin-column) + var(--gutter) + var(--container-measure));
+  }
+
+  .head h1 {
     font-size: var(--text-h1);
   }
 
-  .page-title + .bio {
-    margin-block-start: calc(var(--spacing) * 10);
-  }
-
-  .page-title::after {
+  .head::after {
     content: "";
     display: block;
     height: 2px;
@@ -156,31 +157,8 @@ const jsonLd = {
     background-color: var(--color-accent);
   }
 
-  .bio,
-  .section :global(.role),
-  .education,
-  .contact {
-    max-width: var(--container-measure);
-  }
-
   .bio > * + * {
     margin-block-start: calc(var(--spacing) * 6);
-  }
-
-  .section {
-    margin-block-start: calc(var(--spacing) * 16);
-    padding-block-start: calc(var(--spacing) * 5);
-    border-top: 1px solid var(--color-rule);
-  }
-
-  .section > h2 {
-    font-family: var(--font-mono);
-    font-size: var(--text-label);
-    font-weight: 400;
-    text-transform: uppercase;
-    letter-spacing: var(--tracking-label);
-    color: var(--color-muted);
-    margin-block-end: calc(var(--spacing) * 10);
   }
 
   .education {
@@ -188,8 +166,6 @@ const jsonLd = {
   }
 
   .education > div {
-    display: grid;
-    grid-template-columns: minmax(0, 1fr);
     padding-block: calc(var(--spacing) * 5);
     border-top: 1px solid color-mix(in srgb, var(--color-rule) 55%, transparent);
   }

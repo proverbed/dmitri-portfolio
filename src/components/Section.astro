@@ -1,0 +1,67 @@
+---
+/**
+ * A section on the annotated grid: its label sits out in the margin column, the
+ * way a manual sets a section marker, with the content in the text column.
+ *
+ * Every page that uses the margin device uses this, so the label axis is
+ * identical down the whole site rather than being rebuilt per page.
+ */
+interface Props {
+  label: string;
+  /** Anchor id; also names the region for assistive technology. */
+  id: string;
+  /** The first section on a page sits under the title rule already. */
+  first?: boolean;
+}
+
+const { label, id, first = false } = Astro.props;
+---
+
+<section class:list={["section", first && "section-first"]} aria-labelledby={id}>
+  <h2 id={id} class="label">{label}</h2>
+  <div class="section-body">
+    <slot />
+  </div>
+</section>
+
+<style>
+  .section {
+    display: grid;
+    grid-template-columns: var(--margin-column) minmax(0, var(--container-measure));
+    column-gap: var(--gutter);
+    margin-block-start: calc(var(--spacing) * 16);
+    padding-block-start: calc(var(--spacing) * 5);
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .section-first {
+    margin-block-start: calc(var(--spacing) * 14);
+  }
+
+  h2 {
+    grid-column: 1;
+    font-family: var(--font-mono);
+    font-weight: 400;
+    /* Aligned to the first line of the content it marks, not floating above it. */
+    padding-block-start: calc(var(--spacing) * 1);
+  }
+
+  .section-body {
+    grid-column: 2;
+  }
+
+  @media (max-width: 64rem) {
+    .section {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    h2,
+    .section-body {
+      grid-column: 1;
+    }
+
+    .section-body {
+      margin-block-start: calc(var(--spacing) * 6);
+    }
+  }
+</style>

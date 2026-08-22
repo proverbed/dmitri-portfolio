@@ -1,5 +1,6 @@
 ---
 import Base from "../layouts/Base.astro";
+import Section from "../components/Section.astro";
 import { formatDate, isoDate } from "../lib/format";
 import { SITE } from "../lib/site";
 import { getArticles } from "../lib/writing";
@@ -10,9 +11,11 @@ const studies = await getCaseStudies();
 ---
 
 <Base title={SITE.name} description={SITE.description} width="annotated">
+  {/* The masthead already carries the name. The largest type on the page is
+      the claim, which is the thing a reader is here to evaluate. */}
   <header class="head">
-    <h1>{SITE.name}</h1>
-    <p class="positioning">{SITE.role}</p>
+    <p class="label kicker">{SITE.role}</p>
+    <h1>{SITE.thesis}</h1>
   </header>
 
   <p class="intro">
@@ -26,58 +29,52 @@ const studies = await getCaseStudies();
     harder than they looked.
   </p>
 
-  {/* Two routes in, separated structurally rather than decoratively. */}
-  <div class="routes">
-    <section aria-labelledby="selected-work">
-      <h2 id="selected-work" class="label">Selected work</h2>
-      <ul class="index">
-        {
-          studies.map((study) => (
-            <li>
-              <a href={`/work/${study.id}`}>{study.data.title}</a>
-              <span class="period label">{study.data.period}</span>
-            </li>
-          ))
-        }
-      </ul>
-    </section>
+  <Section label="Selected work" id="selected-work" first>
+    <ul class="index">
+      {
+        studies.map((study) => (
+          <li>
+            <a href={`/work/${study.id}`}>{study.data.title}</a>
+            <span class="period label">{study.data.period}</span>
+          </li>
+        ))
+      }
+    </ul>
+  </Section>
 
-    <section aria-labelledby="recent-writing">
-      <h2 id="recent-writing" class="label">Writing</h2>
+  <Section label="Writing" id="recent-writing">
+    {articles.length === 0 && <p class="empty">Nothing published yet.</p>}
 
-      {articles.length === 0 && <p class="empty">Nothing published yet.</p>}
+    <ul class="index">
+      {
+        articles.map((article) => (
+          <li>
+            <a href={`/writing/${article.id}`}>{article.data.title}</a>
+            <span class="period label">
+              <time datetime={isoDate(article.data.publishDate)}>
+                {formatDate(article.data.publishDate)}
+              </time>
+            </span>
+          </li>
+        ))
+      }
+    </ul>
 
-      <ul class="index">
-        {
-          articles.map((article) => (
-            <li>
-              <a href={`/writing/${article.id}`}>{article.data.title}</a>
-              <span class="period label">
-                <time datetime={isoDate(article.data.publishDate)}>
-                  {formatDate(article.data.publishDate)}
-                </time>
-              </span>
-            </li>
-          ))
-        }
-      </ul>
-
-      <p class="more label"><a href="/writing">All writing</a></p>
-    </section>
-  </div>
+    <p class="more label"><a href="/writing">All writing</a></p>
+  </Section>
 </Base>
 
 <style>
-  .head h1 {
-    font-size: var(--text-h1);
+  .head {
+    max-width: calc(var(--margin-column) + var(--gutter) + var(--container-measure));
   }
 
-  .positioning {
-    margin-block-start: calc(var(--spacing) * 5);
-    font-size: var(--text-lede);
-    line-height: var(--leading-snug);
-    color: var(--color-muted);
-    max-width: var(--container-measure);
+  .kicker {
+    margin-block-end: calc(var(--spacing) * 5);
+  }
+
+  .head h1 {
+    font-size: var(--text-h1);
   }
 
   .head::after {
@@ -93,26 +90,8 @@ const studies = await getCaseStudies();
     max-width: var(--container-measure);
   }
 
-  .routes {
-    display: grid;
-    gap: calc(var(--spacing) * 12);
-    margin-block-start: calc(var(--spacing) * 16);
-  }
-
-  @media (min-width: 64rem) {
-    .routes {
-      grid-template-columns: 1fr 1fr;
-      gap: var(--gutter);
-    }
-  }
-
-  .routes section {
-    padding-block-start: calc(var(--spacing) * 5);
-    border-top: 1px solid var(--color-rule);
-  }
-
   .index {
-    margin: calc(var(--spacing) * 5) 0 0;
+    margin: 0;
     padding: 0;
     list-style: none;
   }
@@ -153,7 +132,6 @@ const studies = await getCaseStudies();
   }
 
   .empty {
-    margin-block-start: calc(var(--spacing) * 5);
     color: var(--color-muted);
     font-size: var(--text-small);
   }
