@@ -52,6 +52,21 @@ Every case study must carry exactly these level-2 headings, in this order:
 This is checked in `src/lib/work.ts` and **fails the build** if it drifts. Four
 pages a reader compares side by side are worth the rigidity.
 
+## CV / career history
+
+`/about` renders its career history from `src/lib/cv.ts` — a typed array, one
+place to edit. Each role carries `company`, `title`, `start`, `end` (null while
+current), `location`, `summary` and `highlights`. Dates are ISO year-months
+(`"2025-08"`) and are formatted for display and emitted as `<time datetime>`.
+
+There is deliberately no PDF and no download link: the page is the CV.
+
+The email address is percent-encoded in the `mailto:` href and written as numeric
+character references in the visible text (`src/lib/email.ts`), so the plain
+string never appears in the served HTML. Both decode in the browser with no
+JavaScript. This defeats scrapers that regex the raw file and nothing more —
+which is the ceiling for a static page.
+
 ## OG images
 
 Generated at build time by `src/lib/og.ts` (satori → SVG, resvg → PNG) and served

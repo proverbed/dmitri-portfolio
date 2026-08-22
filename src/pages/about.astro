@@ -1,6 +1,37 @@
 ---
 import Base from "../layouts/Base.astro";
+import RoleEntry from "../components/RoleEntry.astro";
+import { EDUCATION, ROLES, UNIVERSITY } from "../lib/cv";
+import { encodeMailto, encodeText } from "../lib/email";
 import { SITE, SOCIALS } from "../lib/site";
+
+const currentRole = ROLES[0];
+
+// Assembled as one HTML string so no JSX whitespace lands between the last link
+// and the full stop. The address is encoded rather than written literally.
+const contactLine = [
+  "Available for senior engineering roles &#8212; ",
+  `<a href="${encodeMailto(SITE.email)}">${encodeText(SITE.email)}</a>, `,
+  SOCIALS.map((social) => `<a href="${social.href}" rel="me">${social.label}</a>`).join(
+    " and ",
+  ),
+  ".",
+].join("");
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: SITE.name,
+  url: SITE.url,
+  jobTitle: currentRole?.title,
+  worksFor: currentRole
+    ? { "@type": "Organization", name: currentRole.company }
+    : undefined,
+  alumniOf: { "@type": "CollegeOrUniversity", name: UNIVERSITY },
+  sameAs: SOCIALS.map((social) => social.href),
+  // Deliberately no `email` property: the point of encoding it in the markup is
+  // defeated by publishing it in plain text a few lines further down the page.
+};
 ---
 
 <Base
@@ -8,9 +39,16 @@ import { SITE, SOCIALS } from "../lib/site";
   description="Full-stack engineer in Cape Town, fifteen years in, working mostly in TypeScript across the stack."
   width="measure"
 >
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(jsonLd)}
+  />
+
   <h1 class="page-title">About</h1>
 
-  <div class="body">
+  <div class="bio">
     <p>
       I'm a full-stack engineer based in Cape Town, fifteen years in, working
       mostly in TypeScript across the stack — React and Next.js on the front, AWS
@@ -60,13 +98,45 @@ import { SITE, SOCIALS } from "../lib/site";
       real money, and about making fast delivery safe rather than treating those
       as a trade-off.
     </p>
-
-    <h2>Elsewhere</h2>
-    <ul class="links">
-      {SOCIALS.map((social) => <li><a href={social.href} rel="me">{social.label}</a></li>)}
-      <li><a href={`mailto:${SITE.email}`}>{SITE.email}</a></li>
-    </ul>
   </div>
+
+  <section class="section" aria-labelledby="career">
+    <h2 id="career">Career</h2>
+    {ROLES.map((role) => <RoleEntry role={role} />)}
+  </section>
+
+  <section class="section" aria-labelledby="education">
+    <h2 id="education">Education</h2>
+
+    <dl class="education">
+      {
+        EDUCATION.map((qualification) => (
+          <div>
+            <dt>{qualification.award}</dt>
+            <dd>
+              {qualification.institution}
+              <span class="separator" aria-hidden="true">·</span>
+              {/* A single <time> cannot express a span, so a multi-year
+                  qualification gets one element per endpoint. */}
+              <time datetime={qualification.startYear}>{qualification.startYear}</time>
+              {qualification.endYear !== qualification.startYear && (
+                <>
+                  <span aria-hidden="true">&#8211;</span>
+                  <time datetime={qualification.endYear}>{qualification.endYear}</time>
+                </>
+              )}
+              {qualification.note && <span class="note">{qualification.note}</span>}
+            </dd>
+          </div>
+        ))
+      }
+    </dl>
+  </section>
+
+  <section class="section" aria-labelledby="contact">
+    <h2 id="contact">Contact</h2>
+    <p set:html={contactLine} />
+  </section>
 </Base>
 
 <style>
@@ -75,30 +145,48 @@ import { SITE, SOCIALS } from "../lib/site";
     margin-block-end: calc(var(--spacing) * 8);
   }
 
-  .body > * + * {
+  .bio > * + * {
     margin-block-start: calc(var(--spacing) * 6);
   }
 
-  .body h2 {
-    font-size: var(--text-sm);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--color-muted);
-    margin-block-start: calc(var(--spacing) * 12);
+  .section {
+    margin-block-start: calc(var(--spacing) * 14);
     padding-block-start: calc(var(--spacing) * 6);
     border-top: 1px solid var(--color-rule);
   }
 
-  .body h2 + * {
-    margin-block-start: calc(var(--spacing) * 5);
+  .section > h2 {
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-muted);
+    margin-block-end: calc(var(--spacing) * 8);
   }
 
-  .links {
-    padding-inline-start: 0;
-    list-style: none;
+  .education {
+    margin: 0;
   }
 
-  .links li + li {
-    margin-block-start: calc(var(--spacing) * 2);
+  .education > div + div {
+    margin-block-start: calc(var(--spacing) * 6);
+  }
+
+  .education dt {
+    font-weight: 600;
+  }
+
+  .education dd {
+    margin: calc(var(--spacing) * 1) 0 0;
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+
+  .separator {
+    padding-inline: calc(var(--spacing) * 2);
+  }
+
+  .note::before {
+    content: "·";
+    padding-inline: calc(var(--spacing) * 2);
   }
 </style>

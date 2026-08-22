@@ -1,0 +1,86 @@
+---
+import { formatMonth } from "../lib/format";
+import type { Role } from "../lib/cv";
+
+interface Props {
+  role: Role;
+}
+
+const { role } = Astro.props;
+const { company, title, start, end, location, summary, highlights } = role;
+---
+
+{/* One <article> per role: with CSS disabled this still reads as a heading,
+    a dated line, a sentence and a list, in that order. */}
+<article class="role">
+  <h3>
+    {title}, {company}
+  </h3>
+
+  <p class="meta">
+    <time datetime={start}>{formatMonth(start)}</time>
+    <span aria-hidden="true">&#8211;</span>
+    {end ? <time datetime={end}>{formatMonth(end)}</time> : <span>present</span>}
+    <span class="separator" aria-hidden="true">·</span>
+    <span>{location}</span>
+  </p>
+
+  <p class="summary">{summary}</p>
+
+  {
+    highlights.length > 0 && (
+      <ul class="highlights">
+        {highlights.map((highlight) => (
+          <li>{highlight}</li>
+        ))}
+      </ul>
+    )
+  }
+</article>
+
+<style>
+  .role + .role {
+    margin-block-start: calc(var(--spacing) * 10);
+    padding-block-start: calc(var(--spacing) * 10);
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .role h3 {
+    font-size: var(--text-h3);
+  }
+
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--spacing) * 1.5);
+    margin-block-start: calc(var(--spacing) * 2);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+
+  .separator {
+    padding-inline: calc(var(--spacing) * 1);
+  }
+
+  .summary {
+    margin-block-start: calc(var(--spacing) * 4);
+  }
+
+  .highlights {
+    margin-block-start: calc(var(--spacing) * 4);
+    padding-inline-start: calc(var(--spacing) * 5);
+    list-style: disc;
+  }
+
+  .highlights li {
+    padding-inline-start: calc(var(--spacing) * 1);
+  }
+
+  .highlights li + li {
+    margin-block-start: calc(var(--spacing) * 2);
+  }
+
+  .highlights li::marker {
+    color: var(--color-muted);
+  }
+</style>
