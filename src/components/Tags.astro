@@ -1,0 +1,50 @@
+---
+interface Props {
+  tags: readonly string[];
+  /**
+   * Tag pages are generated from published articles only, so a draft's tags
+   * would link to pages that do not exist. Draft callers pass `linked={false}`.
+   */
+  linked?: boolean;
+}
+
+const { tags, linked = true } = Astro.props;
+---
+
+{
+  tags.length > 0 && (
+    <ul class="tags" aria-label="Tags">
+      {tags.map((tag) => (
+        <li>
+          {linked ? <a href={`/writing/tag/${tag}`}>{tag}</a> : <span>{tag}</span>}
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+<style>
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--spacing) * 2);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: var(--text-xs);
+  }
+
+  .tags :is(a, span) {
+    display: inline-block;
+    padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 2);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+
+  .tags a:hover {
+    color: var(--color-accent);
+    border-color: var(--color-accent);
+  }
+</style>

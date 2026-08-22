@@ -1,0 +1,92 @@
+---
+title: "Typography proof"
+description: "A scratch page that exercises every element the article template has to render. Delete before launch."
+publishDate: 2026-08-22
+tags: ["meta"]
+draft: true
+---
+
+import Callout from "../../components/Callout.astro";
+import Figure from "../../components/Figure.astro";
+
+This paragraph exists to show the measure. It should run to roughly seventy characters
+before wrapping, at eighteen pixels, with line height comfortable enough that a
+hiring manager reads three paragraphs without noticing they are reading. Inline
+`code` sits here, as does a [link](/about), some *emphasis*, and **strong text**.
+
+## The first section
+
+A second paragraph, so the rhythm between blocks is visible.[^1] Footnote markers
+should read as apparatus, not as body copy.
+
+### A subsection
+
+Lists carry their own rhythm:
+
+- A first item, long enough to wrap onto a second line so the hanging indent can
+  be judged rather than guessed at.
+- A second item.
+  - A nested item.
+
+1. Ordered lists too.
+2. With a second entry.
+
+## Code
+
+```ts
+export function readingTime(source: string): number {
+  const fences = source.match(/```[\s\S]*?```/g) ?? [];
+  const prose = source.replace(/```[\s\S]*?```/g, " ");
+  const words = prose.split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.round(words / 220));
+}
+```
+
+A line that is deliberately far too long to fit inside a 360px viewport, so that horizontal scrolling inside the code block can be confirmed to work without the page itself scrolling:
+
+```bash
+aws cloudformation describe-stacks --stack-name my-very-long-stack-name --query 'Stacks[0].Outputs' --output table
+```
+
+## Blocks and figures
+
+> A block quote, set in italic against the rule, used sparingly and never for
+> emphasis that a sentence could carry on its own.
+
+<Callout variant="note">
+  A note. Used for context the reader can skip without losing the argument.
+</Callout>
+
+<Callout variant="warning" title="Do not do this">
+  A warning. Distinguished by weight and hue shift rather than a coloured panel,
+  so it survives being read in greyscale.
+</Callout>
+
+<Figure caption="A figure with no image, holding a table instead.">
+
+| Stage | Resources | Outcome |
+| --- | --- | --- |
+| Before | 498 | At the ceiling |
+| Phase one | 312 | Shipped |
+| Phase two | 340 | Reverted |
+
+</Figure>
+
+## Fourth section
+
+Present so the table of contents crosses its four-heading threshold and renders.
+
+### A third-level heading
+
+Present so the fourth level below it does not skip a rank.
+
+#### A fourth-level heading
+
+Rarely used, but it must not collapse into the body when it is.
+
+## Fifth section
+
+Closing paragraph.[^2]
+
+[^1]: The first footnote, which should sit under a rule at the end of the article.
+[^2]: A second one, to confirm the list numbering.

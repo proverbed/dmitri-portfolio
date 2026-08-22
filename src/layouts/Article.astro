@@ -1,0 +1,193 @@
+---
+import type { MarkdownHeading } from "astro";
+import type { CollectionEntry } from "astro:content";
+
+import Base from "./Base.astro";
+import Prose from "../components/Prose.astro";
+import Tags from "../components/Tags.astro";
+import Toc from "../components/Toc.astro";
+import { formatDate, isoDate } from "../lib/format";
+import { SITE } from "../lib/site";
+
+interface Sibling {
+  slug: string;
+  title: string;
+}
+
+interface Props {
+  entry: CollectionEntry<"writing">;
+  headings: readonly MarkdownHeading[];
+  minutes: number;
+  prev?: Sibling;
+  next?: Sibling;
+}
+
+const { entry, headings, minutes, prev, next } = Astro.props;
+const { title, description, publishDate, updatedDate, tags, draft } = entry.data;
+
+const canonical = new URL(`/writing/${entry.id}`, Astro.site ?? SITE.url).href;
+
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  headline: title,
+  description,
+  datePublished: publishDate.toISOString(),
+  ...(updatedDate ? { dateModified: updatedDate.toISOString() } : {}),
+  author: { "@type": "Person", name: SITE.name, url: SITE.url },
+  publisher: { "@type": "Person", name: SITE.name, url: SITE.url },
+  mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
+  url: canonical,
+  ...(tags.length > 0 ? { keywords: tags.join(", ") } : {}),
+  inLanguage: SITE.locale,
+};
+---
+
+<Base
+  title={title}
+  description={description}
+  type="article"
+  publishDate={publishDate}
+  updatedDate={updatedDate}
+  noindex={draft}
+  width="measure"
+>
+  <script
+    slot="head"
+    type="application/ld+json"
+    is:inline
+    set:html={JSON.stringify(jsonLd)}
+  />
+
+  <article>
+    <header class="article-header">
+      {draft && <p class="draft-flag">Draft — not published</p>}
+
+      <h1>{title}</h1>
+      <p class="article-description">{description}</p>
+
+      <p class="article-meta">
+        <time datetime={isoDate(publishDate)}>{formatDate(publishDate)}</time>
+        <span aria-hidden="true">·</span>
+        <span>{minutes} min read</span>
+        {
+          updatedDate && (
+            <>
+              <span aria-hidden="true">·</span>
+              <span>
+                Updated <time datetime={isoDate(updatedDate)}>{formatDate(updatedDate)}</time>
+              </span>
+            </>
+          )
+        }
+      </p>
+
+      <Tags tags={tags} linked={!draft} />
+    </header>
+
+    <Toc headings={headings} />
+
+    <Prose>
+      <slot />
+    </Prose>
+  </article>
+
+  {
+    (prev || next) && (
+      <nav class="pagination" aria-label="More writing">
+        <div>
+          {prev && (
+            <a href={`/writing/${prev.slug}`} rel="prev">
+              <span class="pagination-label">Previous</span>
+              {prev.title}
+            </a>
+          )}
+        </div>
+        <div class="pagination-next">
+          {next && (
+            <a href={`/writing/${next.slug}`} rel="next">
+              <span class="pagination-label">Next</span>
+              {next.title}
+            </a>
+          )}
+        </div>
+      </nav>
+    )
+  }
+</Base>
+
+<style>
+  .article-header {
+    margin-block-end: calc(var(--spacing) * 10);
+  }
+
+  .article-header h1 {
+    font-size: var(--text-h1);
+  }
+
+  .article-description {
+    margin-block-start: calc(var(--spacing) * 4);
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+    color: var(--color-muted);
+    text-wrap: pretty;
+  }
+
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--spacing) * 2);
+    margin-block: calc(var(--spacing) * 5) calc(var(--spacing) * 4);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+
+  .draft-flag {
+    display: inline-block;
+    margin-block-end: calc(var(--spacing) * 4);
+    padding: calc(var(--spacing) * 1) calc(var(--spacing) * 3);
+    border: 1px solid oklch(0.62 0.16 45);
+    border-radius: var(--radius-sm);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .pagination {
+    display: grid;
+    gap: calc(var(--spacing) * 6);
+    margin-block-start: calc(var(--spacing) * 16);
+    padding-block-start: calc(var(--spacing) * 6);
+    border-top: 1px solid var(--color-rule);
+    font-size: var(--text-sm);
+  }
+
+  @media (min-width: 40rem) {
+    .pagination {
+      grid-template-columns: 1fr 1fr;
+    }
+
+    .pagination-next {
+      text-align: end;
+    }
+  }
+
+  .pagination a {
+    display: block;
+    text-decoration: none;
+    line-height: var(--leading-snug);
+  }
+
+  .pagination a:hover {
+    text-decoration: underline;
+  }
+
+  .pagination-label {
+    display: block;
+    color: var(--color-muted);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-block-end: calc(var(--spacing) * 1);
+  }
+</style>

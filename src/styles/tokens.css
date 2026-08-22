@@ -1,0 +1,63 @@
+@import "tailwindcss";
+
+/* ---------------------------------------------------------------------------
+ * Design tokens. Every colour, size and rhythm value in the site resolves to
+ * something declared here. If a component needs a value that is not a token,
+ * either the token layer is wrong or the component is.
+ * ------------------------------------------------------------------------- */
+@theme {
+  --font-body: "Source Serif 4 Variable", Georgia, "Times New Roman", serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Type scale. Body sits at 18px and never shrinks; headings are fluid. */
+  --text-xs: 0.8125rem;
+  --text-sm: 0.9375rem;
+  --text-base: 1.125rem;
+  --text-lg: 1.25rem;
+  --text-h4: 1.125rem;
+  --text-h3: clamp(1.25rem, 1.13rem + 0.6vw, 1.5rem);
+  --text-h2: clamp(1.5rem, 1.29rem + 1vw, 2rem);
+  --text-h1: clamp(2rem, 1.6rem + 2vw, 2.75rem);
+
+  --leading-prose: 1.7;
+  --leading-snug: 1.35;
+  --leading-tight: 1.15;
+
+  --tracking-tight: -0.011em;
+
+  /* Measure. 68ch is ~68-74 characters at this face and size. */
+  --container-measure: 68ch;
+  --container-wide: 78ch;
+
+  --spacing: 0.25rem;
+
+  --radius-sm: 3px;
+  --radius-md: 6px;
+
+  /* Colour, light theme. OKLCH so the dark variants stay perceptually even. */
+  --color-bg: oklch(0.985 0.003 95);
+  --color-surface: oklch(0.955 0.005 95);
+  --color-text: oklch(0.24 0.012 260);
+  --color-muted: oklch(0.48 0.012 260);
+  --color-rule: oklch(0.88 0.006 260);
+  --color-accent: oklch(0.48 0.13 250);
+  --color-accent-hover: oklch(0.38 0.13 250);
+  --color-code-bg: oklch(0.965 0.004 95);
+  --color-focus: oklch(0.55 0.16 250);
+}
+
+/* Dark theme. Same token names, redefined once. Nothing else in the codebase
+ * is aware that dark mode exists. */
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-bg: oklch(0.19 0.008 260);
+    --color-surface: oklch(0.235 0.009 260);
+    --color-text: oklch(0.92 0.008 95);
+    --color-muted: oklch(0.71 0.011 260);
+    --color-rule: oklch(0.33 0.01 260);
+    --color-accent: oklch(0.78 0.11 245);
+    --color-accent-hover: oklch(0.87 0.09 245);
+    --color-code-bg: oklch(0.235 0.009 260);
+    --color-focus: oklch(0.8 0.12 245);
+  }
+}

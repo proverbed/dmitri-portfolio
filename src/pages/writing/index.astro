@@ -1,0 +1,114 @@
+---
+import Base from "../../layouts/Base.astro";
+import Tags from "../../components/Tags.astro";
+import { formatDate, isoDate } from "../../lib/format";
+import { readingTime } from "../../lib/reading-time";
+import { collectTags, getArticles } from "../../lib/writing";
+
+const articles = await getArticles();
+const tags = collectTags(articles);
+---
+
+<Base
+  title="Writing"
+  description="Essays on shipping software: edge deployment, verification, and infrastructure at its limits."
+>
+  <h1 class="page-title">Writing</h1>
+
+  {
+    tags.length > 0 && (
+      <div class="tag-filter">
+        <span>Filter:</span>
+        <Tags tags={tags} />
+      </div>
+    )
+  }
+
+  {articles.length === 0 && <p>Nothing published yet.</p>}
+
+  <ul class="article-list">
+    {
+      articles.map((article) => (
+        <li>
+          <article>
+            <h2>
+              <a href={`/writing/${article.id}`}>{article.data.title}</a>
+            </h2>
+            <p class="article-description">{article.data.description}</p>
+            <p class="article-meta">
+              <time datetime={isoDate(article.data.publishDate)}>
+                {formatDate(article.data.publishDate)}
+              </time>
+              <span aria-hidden="true">·</span>
+              <span>{readingTime(article.body ?? "")} min read</span>
+              {article.data.draft && (
+                <>
+                  <span aria-hidden="true">·</span>
+                  <span>Draft</span>
+                </>
+              )}
+            </p>
+          </article>
+        </li>
+      ))
+    }
+  </ul>
+</Base>
+
+<style>
+  .page-title {
+    font-size: var(--text-h1);
+    margin-block-end: calc(var(--spacing) * 8);
+  }
+
+  .tag-filter {
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: calc(var(--spacing) * 3);
+    margin-block-end: calc(var(--spacing) * 10);
+    font-size: var(--text-xs);
+    color: var(--color-muted);
+  }
+
+  .article-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .article-list > li + li {
+    margin-block-start: calc(var(--spacing) * 10);
+    padding-block-start: calc(var(--spacing) * 10);
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .article-list h2 {
+    font-size: var(--text-h3);
+  }
+
+  .article-list h2 a {
+    text-decoration: none;
+    color: var(--color-text);
+  }
+
+  .article-list h2 a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .article-description {
+    margin-block-start: calc(var(--spacing) * 2);
+    color: var(--color-muted);
+    text-wrap: pretty;
+  }
+
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--spacing) * 2);
+    margin-block-start: calc(var(--spacing) * 3);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+</style>

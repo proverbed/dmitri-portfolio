@@ -1,0 +1,119 @@
+---
+import Meta from "../components/Meta.astro";
+import { NAV, SITE } from "../lib/site";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+  description: string;
+  type?: "website" | "article";
+  publishDate?: Date;
+  updatedDate?: Date;
+  noindex?: boolean;
+  /** Article pages set the narrow measure; index pages get the wider one. */
+  width?: "measure" | "wide";
+}
+
+const {
+  title,
+  description,
+  type,
+  publishDate,
+  updatedDate,
+  noindex,
+  width = "wide",
+} = Astro.props;
+
+const container = width === "measure" ? "max-w-measure" : "max-w-wide";
+const path = Astro.url.pathname.replace(/\/$/, "");
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+
+    <!-- The roman face renders every glyph above the fold; italic and mono are
+         discovered from CSS only when a page actually uses them. -->
+    <link
+      rel="preload"
+      as="font"
+      type="font/woff2"
+      href="/fonts/source-serif-4-latin-wght-normal.woff2"
+      crossorigin
+    />
+
+    <Meta
+      title={title}
+      description={description}
+      type={type}
+      publishDate={publishDate}
+      updatedDate={updatedDate}
+      noindex={noindex}
+    />
+    <slot name="head" />
+  </head>
+
+  <body>
+    <a href="#main" class="skip-link">Skip to content</a>
+
+    <div class={`mx-auto flex min-h-screen w-full flex-col px-5 sm:px-8 ${container}`}>
+      <header class="flex flex-wrap items-baseline justify-between gap-x-8 gap-y-2 py-8">
+        <a href="/" class="font-semibold no-underline" aria-current={path === "" ? "page" : undefined}>
+          {SITE.name}
+        </a>
+
+        <nav aria-label="Primary">
+          <ul class="m-0 flex list-none gap-6 p-0 text-sm">
+            {
+              NAV.map((item) => (
+                <li>
+                  <a
+                    href={item.href}
+                    aria-current={path === item.href || path.startsWith(`${item.href}/`) ? "page" : undefined}
+                    class="no-underline aria-[current=page]:underline"
+                  >
+                    {item.label}
+                  </a>
+                </li>
+              ))
+            }
+          </ul>
+        </nav>
+      </header>
+
+      <main id="main" tabindex="-1" class="w-full flex-1 py-4">
+        <slot />
+      </main>
+
+      <footer class="mt-20 border-t border-rule py-8 text-sm text-muted">
+        <p>&copy; {new Date().getFullYear()} {SITE.name}</p>
+      </footer>
+    </div>
+
+    <style>
+      .skip-link {
+        position: absolute;
+        left: calc(var(--spacing) * 4);
+        top: calc(var(--spacing) * 4);
+        z-index: 10;
+        padding: calc(var(--spacing) * 2) calc(var(--spacing) * 4);
+        background-color: var(--color-surface);
+        border: 1px solid var(--color-rule);
+        border-radius: var(--radius-md);
+        text-decoration: none;
+        transform: translateY(-200%);
+      }
+
+      .skip-link:focus-visible {
+        transform: translateY(0);
+      }
+
+      #main:focus {
+        outline: none;
+      }
+    </style>
+  </body>
+</html>

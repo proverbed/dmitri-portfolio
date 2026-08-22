@@ -1,0 +1,118 @@
+---
+import Base from "../layouts/Base.astro";
+import { formatDate, isoDate } from "../lib/format";
+import { SITE } from "../lib/site";
+import { getArticles } from "../lib/writing";
+
+const articles = (await getArticles()).slice(0, 4);
+---
+
+<Base title={SITE.name} description={SITE.description} width="measure">
+  <h1 class="name">{SITE.name}</h1>
+  <p class="positioning">{SITE.role}</p>
+
+  <div class="intro">
+    <p>
+      TODO: two or three sentences of substance. What you build, the constraint you
+      are usually hired for, and one concrete thing you have shipped. Written in
+      the first person, no adjectives you would not defend in an interview.
+    </p>
+    <p>
+      TODO: a second paragraph if the first cannot carry it. Delete this one if it
+      can.
+    </p>
+  </div>
+
+  <section class="writing" aria-labelledby="recent-writing">
+    <h2 id="recent-writing">Writing</h2>
+
+    <ul>
+      {
+        articles.map((article) => (
+          <li>
+            <a href={`/writing/${article.id}`}>{article.data.title}</a>
+            <p>{article.data.description}</p>
+            <time datetime={isoDate(article.data.publishDate)}>
+              {formatDate(article.data.publishDate)}
+            </time>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="all-writing"><a href="/writing">All writing</a></p>
+  </section>
+</Base>
+
+<style>
+  .name {
+    font-size: var(--text-h1);
+  }
+
+  .positioning {
+    margin-block-start: calc(var(--spacing) * 3);
+    font-size: var(--text-lg);
+    line-height: var(--leading-snug);
+    color: var(--color-muted);
+  }
+
+  .intro {
+    margin-block-start: calc(var(--spacing) * 8);
+  }
+
+  .intro > p + p {
+    margin-block-start: calc(var(--spacing) * 5);
+  }
+
+  .writing {
+    margin-block-start: calc(var(--spacing) * 14);
+    padding-block-start: calc(var(--spacing) * 8);
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .writing h2 {
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-muted);
+  }
+
+  .writing ul {
+    list-style: none;
+    margin: calc(var(--spacing) * 6) 0 0;
+    padding: 0;
+  }
+
+  .writing li + li {
+    margin-block-start: calc(var(--spacing) * 6);
+  }
+
+  .writing li > a {
+    font-weight: 600;
+    text-decoration: none;
+    color: var(--color-text);
+  }
+
+  .writing li > a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .writing li p {
+    color: var(--color-muted);
+    line-height: var(--leading-snug);
+    margin-block-start: calc(var(--spacing) * 1);
+  }
+
+  .writing time {
+    display: block;
+    margin-block-start: calc(var(--spacing) * 1);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+
+  .all-writing {
+    margin-block-start: calc(var(--spacing) * 8);
+    font-size: var(--text-sm);
+  }
+</style>

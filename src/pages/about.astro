@@ -1,0 +1,66 @@
+---
+import Base from "../layouts/Base.astro";
+import { SITE, SOCIALS } from "../lib/site";
+---
+
+<Base
+  title="About"
+  description="TODO: replace with a one-sentence description of this page for search results."
+  width="measure"
+>
+  <h1 class="page-title">About</h1>
+
+  <div class="body">
+    <p>
+      TODO: the longer bio. Who you are, what you work on now, and the kind of
+      problem you are usually brought in for. Three or four paragraphs, first
+      person.
+    </p>
+    <p>TODO: paragraph two.</p>
+
+    <h2>Career</h2>
+    <p>
+      TODO: a short career summary. Roles, dates and what each one was actually
+      for — not a list of technologies.
+    </p>
+
+    <h2>Elsewhere</h2>
+    <ul class="links">
+      {SOCIALS.map((social) => <li><a href={social.href} rel="me">{social.label}</a></li>)}
+      <li><a href={`mailto:${SITE.email}`}>Email</a></li>
+    </ul>
+  </div>
+</Base>
+
+<style>
+  .page-title {
+    font-size: var(--text-h1);
+    margin-block-end: calc(var(--spacing) * 8);
+  }
+
+  .body > * + * {
+    margin-block-start: calc(var(--spacing) * 6);
+  }
+
+  .body h2 {
+    font-size: var(--text-h3);
+    margin-block-start: calc(var(--spacing) * 12);
+  }
+
+  .body h2 + * {
+    margin-block-start: calc(var(--spacing) * 4);
+  }
+
+  .links {
+    padding-inline-start: calc(var(--spacing) * 5);
+    list-style: disc;
+  }
+
+  .links li + li {
+    margin-block-start: calc(var(--spacing) * 2);
+  }
+
+  .links li::marker {
+    color: var(--color-muted);
+  }
+</style>

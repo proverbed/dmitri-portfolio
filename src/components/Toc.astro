@@ -1,0 +1,65 @@
+---
+import type { MarkdownHeading } from "astro";
+
+interface Props {
+  headings: readonly MarkdownHeading[];
+  /** Below this many top-level sections a contents list is noise. */
+  threshold?: number;
+}
+
+const { headings, threshold = 4 } = Astro.props;
+
+// h2 only. A two-level contents list on a 2,000-word essay competes with the
+// article instead of orienting the reader.
+// The GFM footnotes heading is apparatus, not a section of the argument.
+const sections = headings.filter(
+  (heading) => heading.depth === 2 && heading.slug !== "footnote-label",
+);
+const show = sections.length >= threshold;
+---
+
+{
+  show && (
+    <nav class="toc" aria-labelledby="toc-heading">
+      <h2 id="toc-heading" class="toc-title">
+        Contents
+      </h2>
+      <ol class="toc-list">
+        {sections.map((section) => (
+          <li>
+            <a href={`#${section.slug}`}>{section.text}</a>
+          </li>
+        ))}
+      </ol>
+    </nav>
+  )
+}
+
+<style>
+  .toc {
+    margin-block: calc(var(--spacing) * 10);
+    padding: calc(var(--spacing) * 5) calc(var(--spacing) * 6);
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-md);
+  }
+
+  .toc-title {
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--color-muted);
+    margin-block-end: calc(var(--spacing) * 3);
+  }
+
+  .toc-list {
+    margin: 0;
+    padding-inline-start: calc(var(--spacing) * 5);
+    font-size: var(--text-sm);
+    line-height: var(--leading-snug);
+  }
+
+  .toc-list li + li {
+    margin-block-start: calc(var(--spacing) * 2);
+  }
+</style>

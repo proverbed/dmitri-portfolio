@@ -1,0 +1,213 @@
+---
+/**
+ * The typographic container. Every rule that styles authored MDX output lives
+ * here rather than being sprayed across the markup, so the reading experience
+ * has exactly one place it can be tuned or broken.
+ */
+---
+
+<div class="prose">
+  <slot />
+</div>
+
+<style is:global>
+  .prose {
+    font-size: var(--text-base);
+    line-height: var(--leading-prose);
+  }
+
+  /* Vertical rhythm: one rule, expressed as space *before* each block. Every
+     block-level child inherits it, so new element types cannot fall through. */
+  .prose > * + * {
+    margin-block-start: calc(var(--spacing) * 6);
+  }
+
+  .prose > h2 {
+    font-size: var(--text-h2);
+    margin-block-start: calc(var(--spacing) * 14);
+  }
+
+  .prose > h3 {
+    font-size: var(--text-h3);
+    margin-block-start: calc(var(--spacing) * 10);
+  }
+
+  .prose > h4 {
+    font-size: var(--text-h4);
+    margin-block-start: calc(var(--spacing) * 8);
+  }
+
+  .prose h2 + *,
+  .prose h3 + *,
+  .prose h4 + * {
+    margin-block-start: calc(var(--spacing) * 4);
+  }
+
+  /* Anchors appear on hover and on keyboard focus; they are hidden from the
+     accessibility tree because the heading text is already the link target. */
+  .prose :is(h2, h3, h4) {
+    position: relative;
+  }
+
+  .prose .heading-anchor {
+    position: absolute;
+    padding-inline-start: calc(var(--spacing) * 2);
+    color: var(--color-muted);
+    text-decoration: none;
+    opacity: 0;
+    font-weight: 400;
+  }
+
+  .prose .heading-anchor::after {
+    content: "#";
+  }
+
+  .prose :is(h2, h3, h4):hover .heading-anchor,
+  .prose .heading-anchor:focus-visible {
+    opacity: 1;
+  }
+
+  /* Tailwind's preflight strips list markers globally. Authored prose is the
+     one place they carry meaning, so they are restored here. */
+  .prose ul {
+    list-style: disc;
+  }
+
+  .prose ol {
+    list-style: decimal;
+  }
+
+  .prose ul ul {
+    list-style: circle;
+  }
+
+  .prose :is(ul, ol) {
+    padding-inline-start: calc(var(--spacing) * 6);
+  }
+
+  .prose li::marker {
+    color: var(--color-muted);
+  }
+
+  .prose li + li {
+    margin-block-start: calc(var(--spacing) * 2);
+  }
+
+  .prose li > :is(ul, ol) {
+    margin-block-start: calc(var(--spacing) * 2);
+  }
+
+  .prose blockquote {
+    margin-inline: 0;
+    padding-inline-start: calc(var(--spacing) * 5);
+    border-inline-start: 2px solid var(--color-rule);
+    color: var(--color-muted);
+    font-style: italic;
+  }
+
+  .prose strong {
+    font-weight: 650;
+  }
+
+  /* Inline code. Sized down against the serif body, which runs large. */
+  .prose :not(pre) > code {
+    background-color: var(--color-code-bg);
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-sm);
+    padding: 0.1em 0.3em;
+    overflow-wrap: anywhere;
+  }
+
+  /* Shiki. Both palettes ship as CSS variables on the same markup, so dark mode
+     costs a media query rather than a second copy of every highlighted token. */
+  .prose pre.astro-code {
+    background-color: var(--color-code-bg) !important;
+    border: 1px solid var(--color-rule);
+    border-radius: var(--radius-md);
+    padding: calc(var(--spacing) * 4);
+    overflow-x: auto;
+    line-height: 1.6;
+    /* Full-bleed to the reading gutter on narrow screens: at 360px an inset
+       code block leaves too little room for a line of code. */
+    margin-inline: calc(var(--spacing) * -3);
+  }
+
+  @media (min-width: 40rem) {
+    .prose pre.astro-code {
+      margin-inline: 0;
+    }
+  }
+
+  .prose pre.astro-code code {
+    display: block;
+    min-width: fit-content;
+  }
+
+  .prose pre.astro-code,
+  .prose pre.astro-code span {
+    color: var(--shiki-light);
+    font-style: var(--shiki-light-font-style);
+    font-weight: var(--shiki-light-font-weight);
+    text-decoration: var(--shiki-light-text-decoration);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .prose pre.astro-code,
+    .prose pre.astro-code span {
+      color: var(--shiki-dark);
+      font-style: var(--shiki-dark-font-style);
+      font-weight: var(--shiki-dark-font-weight);
+      text-decoration: var(--shiki-dark-text-decoration);
+    }
+  }
+
+  .prose table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--text-sm);
+    display: block;
+    overflow-x: auto;
+  }
+
+  .prose :is(th, td) {
+    border-bottom: 1px solid var(--color-rule);
+    padding: calc(var(--spacing) * 2) calc(var(--spacing) * 3);
+    text-align: start;
+    vertical-align: top;
+  }
+
+  .prose th {
+    font-weight: 650;
+  }
+
+  /* GFM footnotes. Rendered by remark into a trailing <section>; styled as an
+     apparatus rather than as more body copy. */
+  .prose .footnotes {
+    margin-block-start: calc(var(--spacing) * 16);
+    padding-block-start: calc(var(--spacing) * 6);
+    border-top: 1px solid var(--color-rule);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+
+  .prose .footnotes h2 {
+    font-size: var(--text-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    margin-block-end: calc(var(--spacing) * 4);
+  }
+
+  .prose .footnotes ol {
+    margin: 0;
+  }
+
+  .prose [data-footnote-ref] {
+    text-decoration: none;
+    font-size: 0.8em;
+    padding-inline: 0.15em;
+  }
+
+  .prose .footnotes p {
+    display: inline;
+  }
+</style>

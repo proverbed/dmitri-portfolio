@@ -1,0 +1,104 @@
+---
+import type { GetStaticPaths } from "astro";
+
+import Base from "../../../layouts/Base.astro";
+import { formatDate, isoDate } from "../../../lib/format";
+import { readingTime } from "../../../lib/reading-time";
+import { collectTags, getArticles } from "../../../lib/writing";
+
+export const getStaticPaths = (async () => {
+  const articles = await getArticles();
+
+  // A page per tag, generated at build time: real URLs, indexable, no client
+  // filtering code to ship or to get wrong.
+  return collectTags(articles).map((tag) => ({
+    params: { tag },
+    props: { tag, articles: articles.filter((a) => a.data.tags.includes(tag)) },
+  }));
+}) satisfies GetStaticPaths;
+
+const { tag, articles } = Astro.props;
+---
+
+<Base
+  title={`Writing tagged “${tag}”`}
+  description={`Articles tagged ${tag}.`}
+>
+  <p class="breadcrumb"><a href="/writing">Writing</a></p>
+  <h1 class="page-title">Tagged “{tag}”</h1>
+
+  <ul class="article-list">
+    {
+      articles.map((article) => (
+        <li>
+          <article>
+            <h2>
+              <a href={`/writing/${article.id}`}>{article.data.title}</a>
+            </h2>
+            <p class="article-description">{article.data.description}</p>
+            <p class="article-meta">
+              <time datetime={isoDate(article.data.publishDate)}>
+                {formatDate(article.data.publishDate)}
+              </time>
+              <span aria-hidden="true">·</span>
+              <span>{readingTime(article.body ?? "")} min read</span>
+            </p>
+          </article>
+        </li>
+      ))
+    }
+  </ul>
+</Base>
+
+<style>
+  .breadcrumb {
+    font-size: var(--text-sm);
+    margin-block-end: calc(var(--spacing) * 3);
+  }
+
+  .page-title {
+    font-size: var(--text-h1);
+    margin-block-end: calc(var(--spacing) * 8);
+  }
+
+  .article-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .article-list > li + li {
+    margin-block-start: calc(var(--spacing) * 10);
+    padding-block-start: calc(var(--spacing) * 10);
+    border-top: 1px solid var(--color-rule);
+  }
+
+  .article-list h2 {
+    font-size: var(--text-h3);
+  }
+
+  .article-list h2 a {
+    text-decoration: none;
+    color: var(--color-text);
+  }
+
+  .article-list h2 a:hover {
+    color: var(--color-accent);
+    text-decoration: underline;
+  }
+
+  .article-description {
+    margin-block-start: calc(var(--spacing) * 2);
+    color: var(--color-muted);
+    text-wrap: pretty;
+  }
+
+  .article-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: calc(var(--spacing) * 2);
+    margin-block-start: calc(var(--spacing) * 3);
+    font-size: var(--text-sm);
+    color: var(--color-muted);
+  }
+</style>

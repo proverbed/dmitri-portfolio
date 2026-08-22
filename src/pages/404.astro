@@ -1,0 +1,30 @@
+---
+import Base from "../layouts/Base.astro";
+---
+
+<Base title="Page not found" description="That page does not exist." noindex width="measure">
+  <h1 class="page-title">Page not found</h1>
+  <p>
+    That URL does not exist. It may have moved, or it may never have existed.
+  </p>
+  <ul class="links">
+    <li><a href="/writing">All writing</a></li>
+    <li><a href="/">Home</a></li>
+  </ul>
+</Base>
+
+<style>
+  .page-title {
+    font-size: var(--text-h1);
+    margin-block-end: calc(var(--spacing) * 5);
+  }
+
+  .links {
+    margin-block-start: calc(var(--spacing) * 6);
+    padding-inline-start: calc(var(--spacing) * 5);
+  }
+
+  .links li + li {
+    margin-block-start: calc(var(--spacing) * 2);
+  }
+</style>
