@@ -1,6 +1,7 @@
 ---
 import Meta from "../components/Meta.astro";
 import { NAV, SITE } from "../lib/site";
+import { getPublishedArticles } from "../lib/writing";
 import "../styles/global.css";
 
 interface Props {
@@ -30,6 +31,8 @@ const {
 } = Astro.props;
 
 const path = Astro.url.pathname.replace(/\/$/, "");
+const hasPublishedWriting = (await getPublishedArticles()).length > 0;
+const nav = NAV.filter((item) => item.href !== "/writing" || hasPublishedWriting);
 ---
 
 <!doctype html>
@@ -80,7 +83,7 @@ const path = Astro.url.pathname.replace(/\/$/, "");
         <nav aria-label="Primary">
           <ul>
             {
-              NAV.map((item) => (
+              nav.map((item) => (
                 <li>
                   <a
                     href={item.href}

@@ -3,10 +3,11 @@ import Base from "../layouts/Base.astro";
 import Section from "../components/Section.astro";
 import { formatDate, isoDate } from "../lib/format";
 import { SITE } from "../lib/site";
-import { getArticles } from "../lib/writing";
+import { getArticles, getPublishedArticles } from "../lib/writing";
 import { getCaseStudies } from "../lib/work";
 
 const articles = (await getArticles()).slice(0, 3);
+const hasPublishedWriting = (await getPublishedArticles()).length > 0;
 const studies = await getCaseStudies();
 ---
 
@@ -42,26 +43,34 @@ const studies = await getCaseStudies();
     </ul>
   </Section>
 
-  <Section label="Writing" id="recent-writing">
-    {articles.length === 0 && <p class="empty">Nothing published yet.</p>}
+  {
+    (hasPublishedWriting || articles.length > 0) && (
+      <Section label="Writing" id="recent-writing">
+        {articles.length === 0 && <p class="empty">Nothing published yet.</p>}
 
-    <ul class="index">
-      {
-        articles.map((article) => (
-          <li>
-            <a href={`/writing/${article.id}`}>{article.data.title}</a>
-            <span class="period label">
-              <time datetime={isoDate(article.data.publishDate)}>
-                {formatDate(article.data.publishDate)}
-              </time>
-            </span>
-          </li>
-        ))
-      }
-    </ul>
+        <ul class="index">
+          {
+            articles.map((article) => (
+              <li>
+                <a href={`/writing/${article.id}`}>{article.data.title}</a>
+                <span class="period label">
+                  <time datetime={isoDate(article.data.publishDate)}>
+                    {formatDate(article.data.publishDate)}
+                  </time>
+                </span>
+              </li>
+            ))
+          }
+        </ul>
 
-    <p class="more label"><a href="/writing">All writing</a></p>
-  </Section>
+        {hasPublishedWriting && (
+          <p class="more label">
+            <a href="/writing">All writing</a>
+          </p>
+        )}
+      </Section>
+    )
+  }
 </Base>
 
 <style>
