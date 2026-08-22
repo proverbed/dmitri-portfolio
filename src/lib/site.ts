@@ -11,7 +11,6 @@ export const SITE = {
   role: "Senior engineer, Cape Town",
   description: "Senior engineer, Cape Town. Writing about systems that have to work.",
   locale: "en-GB",
-  email: "dmitriwarren@gmail.com",
 } as const;
 
 export const SOCIALS: readonly Link[] = [

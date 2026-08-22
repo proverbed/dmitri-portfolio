@@ -61,11 +61,11 @@ current), `location`, `summary` and `highlights`. Dates are ISO year-months
 
 There is deliberately no PDF and no download link: the page is the CV.
 
-The email address is percent-encoded in the `mailto:` href and written as numeric
-character references in the visible text (`src/lib/email.ts`), so the plain
-string never appears in the served HTML. Both decode in the browser with no
-JavaScript. This defeats scrapers that regex the raw file and nothing more —
-which is the ceiling for a static page.
+No email address is published. Contact runs through the LinkedIn and GitHub
+profiles instead — encoding an address on a public page raises the cost of
+scraping it but never removes it, and the profiles reach the same person. If an
+address is added later, put a forwarding one on the domain rather than a
+personal mailbox.
 
 ## OG images
 

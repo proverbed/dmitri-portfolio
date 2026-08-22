@@ -3,18 +3,17 @@ import Base from "../layouts/Base.astro";
 import RoleEntry from "../components/RoleEntry.astro";
 import Section from "../components/Section.astro";
 import { EDUCATION, ROLES, UNIVERSITY } from "../lib/cv";
-import { encodeMailto, encodeText } from "../lib/email";
 import { SITE, SOCIALS } from "../lib/site";
 
 const currentRole = ROLES[0];
 
 // Assembled as one HTML string so no JSX whitespace lands between the last link
-// and the full stop. The address is encoded rather than written literally.
+// and the full stop. No address here by choice: an email address on a public
+// page is scraped, and the profiles below reach the same person.
 const contactLine = [
-  "Available for senior engineering roles &#8212; ",
-  `<a href="${encodeMailto(SITE.email)}">${encodeText(SITE.email)}</a>, `,
+  "Available for senior engineering roles &#8212; reach me on ",
   SOCIALS.map((social) => `<a href="${social.href}" rel="me">${social.label}</a>`).join(
-    " and ",
+    " or ",
   ),
   ".",
 ].join("");
