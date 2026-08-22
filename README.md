@@ -75,16 +75,43 @@ of `@fontsource/source-serif-4` at build time — satori cannot decode woff2, wh
 is why that package (static, ships `.woff`) sits alongside the variable one used
 by the browser.
 
-## Design tokens
+## Design system
 
-`src/styles/tokens.css` is the single source of truth for type, spacing and
-colour. Dark mode redefines the same token names under
-`prefers-color-scheme: dark` and nothing else in the codebase is aware it exists.
-Prose styling lives in `src/components/Prose.astro` rather than being spread
-through the markup.
+`src/styles/tokens.css` is the single source of truth. Six named palette values
+(`ink`, `paper`, `signal`, `deep`, `rule`, `muted`) are the source; every other
+colour derives from them. Dark mode redefines the semantic tokens under
+`prefers-color-scheme: dark`; `signal` is identical in both.
 
-Fonts are self-hosted and vendored into `public/fonts` by `scripts/sync-fonts.mjs`
-from the `@fontsource*` packages — no third-party font CDN at runtime.
+`signal` is the one accent, used as an indicator rather than a highlight: the
+active nav item, one rule under each page title, the callout rule on a warning,
+inline code, the focus ring. It is never a background fill.
+
+Three measured corrections live in the tokens and are asserted by
+`npm run check:contrast`, which fails the build script if any drifts:
+
+| Pair | As briefed | Used |
+| --- | --- | --- |
+| signal on paper | 2.03:1 | links are `deep` text with a signal underline |
+| muted on paper | 4.45:1 | `#646d79` → 4.93:1 |
+| muted on ink | 3.45:1 | `#8a94a1` → 5.32:1 |
+
+Type: **Archivo** 600 for display (tight, -0.02em, 1.05), **Source Serif 4** at
+19px/1.65 for body, **JetBrains Mono** at 13px uppercase with 0.08em tracking for
+labels, metadata and code. Every face is self-hosted and vendored into
+`public/fonts` by `scripts/sync-fonts.mjs` — no third-party font CDN.
+
+Each has a `size-adjust` fallback measured in-browser against the real face, so
+the `font-display: swap` costs no layout shift.
+
+Prose styling lives in `src/components/Prose.astro`; the spec block is
+`src/components/SpecBlock.astro`.
+
+## Layout
+
+Article and case study pages use the annotated grid: a `--margin-column` gutter
+carrying the spec block and contents list, with the text column offset right,
+the way a technical manual annotates. Below 64rem the margin content collapses
+above the text it annotates.
 
 ## Measured
 

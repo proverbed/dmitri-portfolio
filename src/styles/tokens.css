@@ -1,76 +1,98 @@
 @import "tailwindcss";
 
 /* ---------------------------------------------------------------------------
- * Design tokens. Every colour, size and rhythm value in the site resolves to
- * something declared here. If a component needs a value that is not a token,
- * either the token layer is wrong or the component is.
+ * Design tokens. The six named palette values are the source; every other
+ * colour in the site resolves to one of them or to a measured correction of
+ * one. If a component needs a value that is not a token, either the token layer
+ * is wrong or the component is.
  * ------------------------------------------------------------------------- */
 @theme {
-  --font-body: "Source Serif 4 Variable", Georgia, "Times New Roman", serif;
-  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  /* ---- Palette ---------------------------------------------------------- */
+  --color-ink: #1b2028;
+  --color-paper: #f7f8f9;
+  --color-signal: #e8a33d;
+  --color-deep: #0e1116;
+  --color-rule-base: #c9ced4;
+  --color-muted-base: #6b7480;
 
-  /* Type scale. Body sits at 18px and never shrinks; headings are fluid. */
-  --text-label: 0.75rem;
-  --text-xs: 0.8125rem;
-  --text-sm: 0.9375rem;
-  --text-base: 1.125rem;
-  --text-lg: 1.25rem;
+  /* Corrections, measured rather than judged:
+   *   signal on paper = 2.03:1, muted on paper = 4.45:1, muted on ink = 3.45:1
+   * signal itself is never altered — it is #E8A33D in both themes. It indicates;
+   * it does not letter. On paper a link is `deep` text with a signal underline,
+   * which is also how a caution lamp works: beside the label, not instead of it.
+   * `signal-text` exists for the rare case where amber must carry glyphs on
+   * paper. Verified by scripts/check-contrast.mjs. */
+  --color-signal-text: #9a640b; /* 4.70:1 on paper */
+  --color-muted-on-paper: #646d79; /* 4.93:1 */
+  --color-muted-on-ink: #8a94a1; /* 5.32:1 */
+  --color-rule-on-ink: #454e5b;
+
+  /* ---- Semantic, light (paper ground) ----------------------------------- */
+  --color-bg: var(--color-paper);
+  --color-surface: #eef0f2;
+  --color-text: var(--color-deep);
+  --color-muted: var(--color-muted-on-paper);
+  --color-rule: var(--color-rule-base);
+  --color-accent: var(--color-signal);
+  --color-accent-text: var(--color-signal-text);
+  --color-focus: var(--color-signal);
+  --color-code-bg: #eef0f2;
+
+  /* ---- Type ------------------------------------------------------------- */
+  /* Archivo: a tight grotesque with the character this brief asks for in its
+   * caps and numerals. Its width axis was measured and dropped — see the note
+   * on the @font-face rule in global.css. */
+  --font-display: "Archivo", "Archivo Fallback", Arial, sans-serif;
+  --font-body: "Source Serif 4 Variable", "Source Serif Fallback", Georgia, serif;
+  --font-mono: "JetBrains Mono", "JetBrains Fallback", ui-monospace, Menlo, monospace;
+
+  --text-body: 1.1875rem; /* 19px */
+  --text-lede: 1.375rem;
+  --text-small: 0.9375rem;
+  --text-label: 0.8125rem; /* 13px utility mono */
+
   --text-h4: 1.125rem;
-  --text-h3: clamp(1.25rem, 1.13rem + 0.6vw, 1.5rem);
-  --text-h2: clamp(1.5rem, 1.29rem + 1vw, 2rem);
-  --text-h1: clamp(2rem, 1.6rem + 2vw, 2.75rem);
+  --text-h3: clamp(1.375rem, 1.2rem + 0.9vw, 1.75rem);
+  --text-h2: clamp(1.75rem, 1.4rem + 1.8vw, 2.5rem);
+  --text-h1: clamp(2.75rem, 1.9rem + 4.2vw, 4.5rem); /* 44px → 72px */
 
-  --leading-prose: 1.7;
-  --leading-snug: 1.35;
-  --leading-tight: 1.15;
+  --leading-display: 1.05;
+  --leading-prose: 1.65;
+  --leading-snug: 1.3;
 
-  --tracking-tight: -0.011em;
+  --tracking-display: -0.02em;
+  --tracking-label: 0.08em;
 
-  /* Measure. 68ch is ~68-74 characters at this face and size. */
-  --container-measure: 68ch;
-  --container-wide: 78ch;
+  /* ---- Measure, and the manual's annotation gutter ---------------------- */
+  --container-measure: 68ch; /* ~66–70 characters at 19px */
   --container-cards: 62rem;
+  --margin-column: 15.5rem;
+  --gutter: 3rem;
 
   --spacing: 0.25rem;
+  --radius-sm: 2px;
 
-  --radius-sm: 3px;
-  --radius-md: 6px;
-
-  /* Colour, light theme. OKLCH so the dark variants stay perceptually even. */
-  --color-bg: oklch(0.985 0.003 95);
-  --color-surface: oklch(0.955 0.005 95);
-  --color-text: oklch(0.24 0.012 260);
-  --color-muted: oklch(0.48 0.012 260);
-  --color-rule: oklch(0.88 0.006 260);
-  --color-accent: oklch(0.48 0.13 250);
-  --color-accent-hover: oklch(0.38 0.13 250);
-  --color-code-bg: oklch(0.965 0.004 95);
-  --color-focus: oklch(0.55 0.16 250);
-
-  /* Fixed across themes: the OG image is rendered once, at build time, and is
-   * viewed inside someone else's dark or light UI regardless. */
-  --color-brand-bg: oklch(0.19 0.008 260);
-  --color-brand-ink: oklch(0.96 0.008 95);
+  /* Fixed across themes: OG images render once and are viewed inside someone
+   * else's UI regardless of its theme. */
+  --color-brand-bg: #1b2028;
+  --color-brand-ink: #f7f8f9;
 }
 
-/* Dark theme. Same token names, redefined once. Nothing else in the codebase
- * is aware that dark mode exists.
+/* Dark: the ground becomes ink, the text becomes paper, signal does not move.
  *
- * These are plain custom properties rather than a second `@theme` block:
- * `@theme` is hoisted out of any at-rule it is nested in, so a `@theme` inside
- * this media query would apply the dark palette unconditionally. Tailwind's
- * utilities compile to `var(--color-*)` lookups, so overriding the properties
- * here is enough for every utility and every hand-written rule alike. */
+ * Plain custom properties rather than a second `@theme` block: `@theme` is
+ * hoisted out of any at-rule it is nested in, so a `@theme` here would apply
+ * the dark palette unconditionally. Tailwind's utilities compile to
+ * `var(--color-*)` lookups, so overriding the properties is enough. */
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-bg: oklch(0.19 0.008 260);
-    --color-surface: oklch(0.235 0.009 260);
-    --color-text: oklch(0.92 0.008 95);
-    --color-muted: oklch(0.71 0.011 260);
-    --color-rule: oklch(0.33 0.01 260);
-    --color-accent: oklch(0.78 0.11 245);
-    --color-accent-hover: oklch(0.87 0.09 245);
-    --color-code-bg: oklch(0.235 0.009 260);
-    --color-focus: oklch(0.8 0.12 245);
+    --color-bg: var(--color-ink);
+    --color-surface: #232935;
+    --color-text: var(--color-paper);
+    --color-muted: var(--color-muted-on-ink);
+    --color-rule: var(--color-rule-on-ink);
+    /* On ink, signal reaches 7.58:1 — here it can and does carry text. */
+    --color-accent-text: var(--color-signal);
+    --color-code-bg: #232935;
   }
 }

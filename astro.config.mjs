@@ -12,6 +12,10 @@ import { SITE } from "./src/lib/site";
 export default defineConfig({
   site: SITE.url,
   output: "static",
+  // The whole stylesheet is ~6KB. Astro's default extracts anything over 4KB to
+  // a file, which on a throttled connection costs two render-blocking requests
+  // for less than the bytes they save.
+  build: { inlineStylesheets: "always" },
   trailingSlash: "never",
   integrations: [mdx(), sitemap({ filter: (page) => !page.includes("/404") })],
   vite: { plugins: [tailwindcss()] },

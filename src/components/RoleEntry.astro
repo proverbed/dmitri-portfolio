@@ -40,8 +40,8 @@ const { company, title, start, end, location, summary, highlights } = role;
 
 <style>
   .role + .role {
-    margin-block-start: calc(var(--spacing) * 10);
-    padding-block-start: calc(var(--spacing) * 10);
+    margin-block-start: calc(var(--spacing) * 12);
+    padding-block-start: calc(var(--spacing) * 12);
     border-top: 1px solid var(--color-rule);
   }
 
@@ -53,8 +53,12 @@ const { company, title, start, end, location, summary, highlights } = role;
     display: flex;
     flex-wrap: wrap;
     gap: calc(var(--spacing) * 1.5);
-    margin-block-start: calc(var(--spacing) * 2);
-    font-size: var(--text-sm);
+    margin-block-start: calc(var(--spacing) * 3);
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-variant-numeric: tabular-nums;
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
     color: var(--color-muted);
   }
 

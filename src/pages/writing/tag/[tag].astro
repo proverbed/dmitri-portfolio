@@ -23,8 +23,9 @@ const { tag, articles } = Astro.props;
 <Base
   title={`Writing tagged “${tag}”`}
   description={`Articles tagged ${tag}.`}
+  width="measure"
 >
-  <p class="breadcrumb"><a href="/writing">Writing</a></p>
+  <p class="label breadcrumb"><a href="/writing">Writing</a></p>
   <h1 class="page-title">Tagged “{tag}”</h1>
 
   <ul class="article-list">
@@ -36,12 +37,12 @@ const { tag, articles } = Astro.props;
               <a href={`/writing/${article.id}`}>{article.data.title}</a>
             </h2>
             <p class="article-description">{article.data.description}</p>
-            <p class="article-meta">
+            <p class="label article-meta">
               <time datetime={isoDate(article.data.publishDate)}>
                 {formatDate(article.data.publishDate)}
               </time>
               <span aria-hidden="true">·</span>
-              <span>{readingTime(article.body ?? "")} min read</span>
+              <span>{readingTime(article.body ?? "")} min</span>
             </p>
           </article>
         </li>
@@ -52,24 +53,39 @@ const { tag, articles } = Astro.props;
 
 <style>
   .breadcrumb {
-    font-size: var(--text-sm);
-    margin-block-end: calc(var(--spacing) * 3);
+    margin-block-end: calc(var(--spacing) * 4);
+  }
+
+  .breadcrumb a {
+    color: inherit;
+    box-shadow: none;
+  }
+
+  .breadcrumb a:hover {
+    color: var(--color-text);
   }
 
   .page-title {
-    font-size: var(--text-h1);
-    margin-block-end: calc(var(--spacing) * 8);
+    font-size: var(--text-h2);
+  }
+
+  .page-title::after {
+    content: "";
+    display: block;
+    height: 2px;
+    margin-block-start: calc(var(--spacing) * 7);
+    background-color: var(--color-accent);
   }
 
   .article-list {
-    list-style: none;
-    margin: 0;
+    margin: calc(var(--spacing) * 10) 0 0;
     padding: 0;
+    list-style: none;
+    border-bottom: 1px solid var(--color-rule);
   }
 
-  .article-list > li + li {
-    margin-block-start: calc(var(--spacing) * 10);
-    padding-block-start: calc(var(--spacing) * 10);
+  .article-list > li {
+    padding-block: calc(var(--spacing) * 8);
     border-top: 1px solid var(--color-rule);
   }
 
@@ -78,19 +94,17 @@ const { tag, articles } = Astro.props;
   }
 
   .article-list h2 a {
-    text-decoration: none;
-    color: var(--color-text);
+    box-shadow: none;
   }
 
   .article-list h2 a:hover {
-    color: var(--color-accent);
-    text-decoration: underline;
+    box-shadow: inset 0 -2px 0 0 var(--color-accent);
   }
 
   .article-description {
-    margin-block-start: calc(var(--spacing) * 2);
+    margin-block-start: calc(var(--spacing) * 3);
     color: var(--color-muted);
-    text-wrap: pretty;
+    line-height: var(--leading-snug);
   }
 
   .article-meta {
@@ -98,7 +112,5 @@ const { tag, articles } = Astro.props;
     flex-wrap: wrap;
     gap: calc(var(--spacing) * 2);
     margin-block-start: calc(var(--spacing) * 3);
-    font-size: var(--text-sm);
-    color: var(--color-muted);
   }
 </style>

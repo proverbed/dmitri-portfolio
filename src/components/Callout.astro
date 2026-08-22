@@ -24,28 +24,24 @@ const label = title ?? DEFAULT_TITLE[variant];
 </aside>
 
 <style>
+  /* No fill and no radius: an annotation in a manual is marked by a rule in the
+     margin, not by a tinted panel. Warning is distinguished by the rule turning
+     signal — which is exactly what amber means on a flight deck. */
   .callout {
-    padding: calc(var(--spacing) * 4) calc(var(--spacing) * 5);
-    border-inline-start: 3px solid var(--color-rule);
-    background-color: var(--color-surface);
-    border-radius: 0 var(--radius-md) var(--radius-md) 0;
+    padding-inline-start: calc(var(--spacing) * 5);
+    border-inline-start: 2px solid var(--color-rule);
   }
 
-  .callout-note {
+  .callout-warning {
     border-inline-start-color: var(--color-accent);
   }
 
-  /* Warning uses weight and a hue shift, not a red panel; the distinction has
-     to survive being read in greyscale. */
-  .callout-warning {
-    border-inline-start-color: oklch(0.62 0.16 45);
-  }
-
   .callout-title {
-    font-size: var(--text-sm);
-    font-weight: 650;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: var(--tracking-label);
     color: var(--color-muted);
     margin-block-end: calc(var(--spacing) * 2);
   }

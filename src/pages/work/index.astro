@@ -9,41 +9,47 @@ const studies = await getCaseStudies();
 <Base
   title="Work"
   description="Selected work: a multi-tenant commerce platform, an aircraft edge fleet, a retail business, and an enterprise scheduling system."
-  width="cards"
+  width="annotated"
 >
-  <h1 class="page-title">Work</h1>
-  <p class="intro">
-    Four systems, in reverse order. Each one covers what it was for, what made it
-    hard, and what I would tell someone starting the same job.
-  </p>
+  <header class="head">
+    <h1>Work</h1>
+    <p class="lede">
+      Four systems, most recent first. Each covers what it was for, what made it
+      hard, and what I would tell someone starting the same job.
+    </p>
+  </header>
 
-  <ul class="grid">
-    {studies.map((entry) => <li><WorkCard entry={entry} /></li>)}
-  </ul>
+  <div class="list">
+    {studies.map((entry) => <WorkCard entry={entry} />)}
+  </div>
 </Base>
 
 <style>
-  .page-title {
+  .head {
+    margin-block-end: calc(var(--spacing) * 12);
+  }
+
+  .head h1 {
     font-size: var(--text-h1);
   }
 
-  .intro {
+  .lede {
+    margin-block-start: calc(var(--spacing) * 6);
     max-width: var(--container-measure);
-    margin-block: calc(var(--spacing) * 4) calc(var(--spacing) * 10);
+    font-size: var(--text-lede);
+    line-height: var(--leading-snug);
     color: var(--color-muted);
   }
 
-  .grid {
-    display: grid;
-    gap: calc(var(--spacing) * 5);
-    margin: 0;
-    padding: 0;
-    list-style: none;
+  .head::after {
+    content: "";
+    display: block;
+    height: 2px;
+    margin-block-start: calc(var(--spacing) * 8);
+    background-color: var(--color-accent);
   }
 
-  @media (min-width: 48rem) {
-    .grid {
-      grid-template-columns: repeat(2, 1fr);
-    }
+  .list {
+    border-bottom: 1px solid var(--color-rule);
   }
 </style>

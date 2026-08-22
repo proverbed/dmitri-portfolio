@@ -12,7 +12,7 @@
 
 <style is:global>
   .prose {
-    font-size: var(--text-base);
+    font-size: var(--text-body);
     line-height: var(--leading-prose);
   }
 
@@ -22,14 +22,15 @@
     margin-block-start: calc(var(--spacing) * 6);
   }
 
+  /* Sections are separated by real space, not merely by a heading. */
   .prose > h2 {
     font-size: var(--text-h2);
-    margin-block-start: calc(var(--spacing) * 14);
+    margin-block-start: calc(var(--spacing) * 18);
   }
 
   .prose > h3 {
     font-size: var(--text-h3);
-    margin-block-start: calc(var(--spacing) * 10);
+    margin-block-start: calc(var(--spacing) * 12);
   }
 
   .prose > h4 {
@@ -53,8 +54,10 @@
     position: absolute;
     padding-inline-start: calc(var(--spacing) * 2);
     color: var(--color-muted);
-    text-decoration: none;
+    box-shadow: none;
     opacity: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
     font-weight: 400;
   }
 
@@ -97,10 +100,12 @@
     margin-block-start: calc(var(--spacing) * 2);
   }
 
+  /* A pull quote is marked by a signal hairline rather than a grey slab: the
+     amber is the annotation mark a manual would use in the margin. */
   .prose blockquote {
     margin-inline: 0;
     padding-inline-start: calc(var(--spacing) * 5);
-    border-inline-start: 2px solid var(--color-rule);
+    border-inline-start: 2px solid var(--color-accent);
     color: var(--color-muted);
     font-style: italic;
   }
@@ -110,11 +115,11 @@
   }
 
   /* Inline code. Sized down against the serif body, which runs large. */
+  /* Inline code is one of the sanctioned places signal appears, and the only
+     one where it carries glyphs — on paper via the corrected `signal-text`. */
   .prose :not(pre) > code {
-    background-color: var(--color-code-bg);
-    border: 1px solid var(--color-rule);
-    border-radius: var(--radius-sm);
-    padding: 0.1em 0.3em;
+    color: var(--color-accent-text);
+    padding: 0.05em 0.15em;
     overflow-wrap: anywhere;
   }
 
@@ -133,7 +138,7 @@
     inset-inline-start: calc(var(--spacing) * 4);
     font-family: var(--font-mono);
     font-size: var(--text-label);
-    letter-spacing: 0.06em;
+    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
     color: var(--color-muted);
     pointer-events: none;
@@ -154,22 +159,22 @@
     color: var(--color-muted);
     font-family: var(--font-mono);
     font-size: var(--text-label);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
     cursor: pointer;
   }
 
-  .prose .code-copy:hover {
-    color: var(--color-accent);
-    border-color: var(--color-accent);
-  }
-
+  .prose .code-copy:hover,
   .prose .code-copy[data-state="done"] {
-    color: var(--color-accent);
+    color: var(--color-accent-text);
+    border-color: var(--color-accent);
   }
 
   .prose pre.astro-code {
     background-color: var(--color-code-bg) !important;
-    border: 1px solid var(--color-rule);
-    border-radius: var(--radius-md);
+    border: 0;
+    border-block: 1px solid var(--color-rule);
+    border-radius: 0;
     padding: calc(var(--spacing) * 4);
     overflow-x: auto;
     line-height: 1.6;
@@ -210,7 +215,7 @@
   .prose table {
     width: 100%;
     border-collapse: collapse;
-    font-size: var(--text-sm);
+    font-size: var(--text-small);
     display: block;
     overflow-x: auto;
   }
@@ -232,14 +237,16 @@
     margin-block-start: calc(var(--spacing) * 16);
     padding-block-start: calc(var(--spacing) * 6);
     border-top: 1px solid var(--color-rule);
-    font-size: var(--text-sm);
+    font-size: var(--text-small);
     color: var(--color-muted);
   }
 
   .prose .footnotes h2 {
-    font-size: var(--text-sm);
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 400;
+    letter-spacing: var(--tracking-label);
     text-transform: uppercase;
-    letter-spacing: 0.06em;
     margin-block-end: calc(var(--spacing) * 4);
   }
 

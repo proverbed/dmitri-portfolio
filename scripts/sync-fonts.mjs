@@ -10,6 +10,10 @@ const dest = join(root, "public", "fonts");
 
 const FILES = [
   [
+    "@fontsource/archivo/files/archivo-latin-600-normal.woff2",
+    "archivo-600-latin.woff2",
+  ],
+  [
     "@fontsource-variable/source-serif-4/files/source-serif-4-latin-wght-normal.woff2",
     "source-serif-4-latin-wght-normal.woff2",
   ],

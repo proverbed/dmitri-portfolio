@@ -1,6 +1,5 @@
 ---
 import Base from "../../layouts/Base.astro";
-import Tags from "../../components/Tags.astro";
 import { formatDate, isoDate } from "../../lib/format";
 import { readingTime } from "../../lib/reading-time";
 import { collectTags, getArticles } from "../../lib/writing";
@@ -12,103 +11,176 @@ const tags = collectTags(articles);
 <Base
   title="Writing"
   description="Essays on shipping software: edge deployment, verification, and infrastructure at its limits."
+  width="annotated"
 >
-  <h1 class="page-title">Writing</h1>
+  <div class="layout">
+    <header class="head">
+      <h1>Writing</h1>
+    </header>
 
-  {
-    tags.length > 0 && (
-      <div class="tag-filter">
-        <span>Filter:</span>
-        <Tags tags={tags} />
-      </div>
-    )
-  }
-
-  {articles.length === 0 && <p>Nothing published yet.</p>}
-
-  <ul class="article-list">
-    {
-      articles.map((article) => (
-        <li>
-          <article>
-            <h2>
-              <a href={`/writing/${article.id}`}>{article.data.title}</a>
+    <aside class="margin">
+      {
+        tags.length > 0 && (
+          <nav class="tags" aria-labelledby="filter-heading">
+            <h2 id="filter-heading" class="label">
+              Filter
             </h2>
-            <p class="article-description">{article.data.description}</p>
-            <p class="article-meta">
-              <time datetime={isoDate(article.data.publishDate)}>
-                {formatDate(article.data.publishDate)}
-              </time>
-              <span aria-hidden="true">·</span>
-              <span>{readingTime(article.body ?? "")} min read</span>
-              {article.data.draft && (
-                <>
+            <ul>
+              {tags.map((tag) => (
+                <li>
+                  <a href={`/writing/tag/${tag}`}>{tag}</a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )
+      }
+    </aside>
+
+    <div class="body">
+      {articles.length === 0 && <p class="empty">Nothing published yet.</p>}
+
+      <ul class="articles">
+        {
+          articles.map((article) => (
+            <li>
+              <article>
+                <p class="label meta">
+                  <time datetime={isoDate(article.data.publishDate)}>
+                    {formatDate(article.data.publishDate)}
+                  </time>
                   <span aria-hidden="true">·</span>
-                  <span>Draft</span>
-                </>
-              )}
-            </p>
-          </article>
-        </li>
-      ))
-    }
-  </ul>
+                  <span>{readingTime(article.body ?? "")} min</span>
+                  {article.data.draft && (
+                    <>
+                      <span aria-hidden="true">·</span>
+                      <span>Draft</span>
+                    </>
+                  )}
+                </p>
+                <h2>
+                  <a href={`/writing/${article.id}`}>{article.data.title}</a>
+                </h2>
+                <p class="summary">{article.data.description}</p>
+              </article>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </div>
 </Base>
 
 <style>
-  .page-title {
+  .layout {
+    display: grid;
+    grid-template-columns: var(--margin-column) minmax(0, var(--container-measure));
+    column-gap: var(--gutter);
+  }
+
+  .head {
+    grid-column: 1 / -1;
+    margin-block-end: calc(var(--spacing) * 12);
+  }
+
+  .head h1 {
     font-size: var(--text-h1);
-    margin-block-end: calc(var(--spacing) * 8);
   }
 
-  .tag-filter {
-    display: flex;
-    align-items: baseline;
-    flex-wrap: wrap;
-    gap: calc(var(--spacing) * 3);
-    margin-block-end: calc(var(--spacing) * 10);
-    font-size: var(--text-xs);
-    color: var(--color-muted);
+  .head::after {
+    content: "";
+    display: block;
+    height: 2px;
+    margin-block-start: calc(var(--spacing) * 8);
+    background-color: var(--color-accent);
   }
 
-  .article-list {
+  .margin {
+    grid-column: 1;
+  }
+
+  .body {
+    grid-column: 2;
+  }
+
+  .tags ul {
+    margin: calc(var(--spacing) * 3) 0 0;
+    padding: 0;
     list-style: none;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+  }
+
+  .tags li + li {
+    margin-block-start: calc(var(--spacing) * 2);
+  }
+
+  .articles {
     margin: 0;
     padding: 0;
+    list-style: none;
   }
 
-  .article-list > li + li {
-    margin-block-start: calc(var(--spacing) * 10);
-    padding-block-start: calc(var(--spacing) * 10);
+  .articles > li {
+    padding-block: calc(var(--spacing) * 8);
     border-top: 1px solid var(--color-rule);
   }
 
-  .article-list h2 {
-    font-size: var(--text-h3);
+  .articles > li:last-child {
+    border-bottom: 1px solid var(--color-rule);
   }
 
-  .article-list h2 a {
-    text-decoration: none;
-    color: var(--color-text);
-  }
-
-  .article-list h2 a:hover {
-    color: var(--color-accent);
-    text-decoration: underline;
-  }
-
-  .article-description {
-    margin-block-start: calc(var(--spacing) * 2);
-    color: var(--color-muted);
-    text-wrap: pretty;
-  }
-
-  .article-meta {
+  .meta {
     display: flex;
     flex-wrap: wrap;
     gap: calc(var(--spacing) * 2);
+    margin-block-end: calc(var(--spacing) * 3);
+  }
+
+  .articles h2 {
+    font-size: var(--text-h3);
+  }
+
+  .articles h2 a {
+    box-shadow: none;
+  }
+
+  .articles h2 a:hover {
+    box-shadow: inset 0 -2px 0 0 var(--color-accent);
+  }
+
+  .summary {
     margin-block-start: calc(var(--spacing) * 3);
-    font-size: var(--text-sm);
     color: var(--color-muted);
+    line-height: var(--leading-snug);
+  }
+
+  .empty {
+    color: var(--color-muted);
+  }
+
+  @media (max-width: 64rem) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .margin,
+    .body {
+      grid-column: 1;
+    }
+
+    .margin {
+      margin-block-end: calc(var(--spacing) * 10);
+    }
+
+    .tags ul {
+      display: flex;
+      flex-wrap: wrap;
+      gap: calc(var(--spacing) * 4);
+    }
+
+    .tags li + li {
+      margin-block-start: 0;
+    }
   }
 </style>

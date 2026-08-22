@@ -20,6 +20,10 @@ const work = defineCollection({
     summary: z.string().min(1).max(200),
     /** Human-readable span, e.g. "2025–present". */
     period: z.string().min(1),
+    /** What the system was and who used it — one line for the spec block. */
+    domain: z.string().min(1).max(80),
+    /** The constraint that defined the work — one line for the spec block. */
+    constraint: z.string().min(1).max(80),
     /** The two or three that matter — not an inventory. */
     tech: z.array(z.string().min(1)).min(1).max(8),
     /** Ascending; the index is ordered by this, not by date. */

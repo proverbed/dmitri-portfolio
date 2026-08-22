@@ -1,0 +1,124 @@
+---
+export interface SpecRow {
+  readonly label: string;
+  readonly value: string;
+  /** Values that are data — dates, durations, tags — take the utility face. */
+  readonly mono?: boolean;
+  /** ISO value, when the row states a date. */
+  readonly datetime?: string;
+}
+
+interface Props {
+  rows: readonly SpecRow[];
+  /** Labels the region for assistive technology. */
+  label: string;
+}
+
+const { rows, label } = Astro.props;
+---
+
+{/* Rules top and bottom only, never a box: an equipment plate is stamped into
+    a surface rather than floating above one. */}
+<dl class="spec" aria-label={label}>
+  {
+    rows.map((row, index) => (
+      <div class="spec-row" style={`--row: ${index}`}>
+        <dt>{row.label}</dt>
+        <dd class:list={[row.mono && "mono"]}>
+          {row.datetime ? <time datetime={row.datetime}>{row.value}</time> : row.value}
+        </dd>
+      </div>
+    ))
+  }
+</dl>
+
+<style>
+  .spec {
+    margin: 0;
+    padding-block: calc(var(--spacing) * 3);
+    border-block: 1px solid var(--color-rule);
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    line-height: 1.45;
+  }
+
+  .spec-row {
+    padding-block: calc(var(--spacing) * 2);
+  }
+
+  .spec-row + .spec-row {
+    border-top: 1px solid color-mix(in srgb, var(--color-rule) 55%, transparent);
+  }
+
+  dt {
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-label);
+    color: var(--color-muted);
+  }
+
+  dd {
+    margin: calc(var(--spacing) * 1) 0 0;
+    color: var(--color-text);
+    font-family: var(--font-body);
+    font-size: var(--text-small);
+    line-height: var(--leading-snug);
+  }
+
+  dd.mono {
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Initialisation: the hairlines draw, then the values report in sequence.
+     One orchestrated moment, ~400ms, pure CSS — no observer, no layout shift. */
+  @media (prefers-reduced-motion: no-preference) {
+    .spec {
+      border-block-color: transparent;
+      animation: spec-rule-in 180ms ease-out forwards;
+    }
+
+    .spec-row {
+      opacity: 0;
+      animation: spec-value-in 160ms ease-out forwards;
+      animation-delay: calc(180ms + var(--row) * 55ms);
+    }
+  }
+
+  @keyframes spec-rule-in {
+    to {
+      border-block-color: var(--color-rule);
+    }
+  }
+
+  @keyframes spec-value-in {
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Below the annotation-margin breakpoint the plate has room to go two-column,
+     which is how an equipment label actually reads. */
+  @media (max-width: 64rem) {
+    .spec-row {
+      display: grid;
+      grid-template-columns: 8.5rem minmax(0, 1fr);
+      column-gap: calc(var(--spacing) * 4);
+      align-items: baseline;
+    }
+
+    dd {
+      margin-block-start: 0;
+    }
+  }
+
+  @media (max-width: 24rem) {
+    .spec-row {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    dd {
+      margin-block-start: calc(var(--spacing) * 1);
+    }
+  }
+</style>

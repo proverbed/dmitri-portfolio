@@ -37,7 +37,7 @@ const jsonLd = {
 <Base
   title="About"
   description="Full-stack engineer in Cape Town, fifteen years in, working mostly in TypeScript across the stack."
-  width="measure"
+  width="annotated"
 >
   <script
     slot="head"
@@ -142,7 +142,25 @@ const jsonLd = {
 <style>
   .page-title {
     font-size: var(--text-h1);
-    margin-block-end: calc(var(--spacing) * 8);
+  }
+
+  .page-title + .bio {
+    margin-block-start: calc(var(--spacing) * 10);
+  }
+
+  .page-title::after {
+    content: "";
+    display: block;
+    height: 2px;
+    margin-block-start: calc(var(--spacing) * 8);
+    background-color: var(--color-accent);
+  }
+
+  .bio,
+  .section :global(.role),
+  .education,
+  .contact {
+    max-width: var(--container-measure);
   }
 
   .bio > * + * {
@@ -150,34 +168,48 @@ const jsonLd = {
   }
 
   .section {
-    margin-block-start: calc(var(--spacing) * 14);
-    padding-block-start: calc(var(--spacing) * 6);
+    margin-block-start: calc(var(--spacing) * 16);
+    padding-block-start: calc(var(--spacing) * 5);
     border-top: 1px solid var(--color-rule);
   }
 
   .section > h2 {
-    font-size: var(--text-sm);
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
+    font-weight: 400;
     text-transform: uppercase;
-    letter-spacing: 0.06em;
+    letter-spacing: var(--tracking-label);
     color: var(--color-muted);
-    margin-block-end: calc(var(--spacing) * 8);
+    margin-block-end: calc(var(--spacing) * 10);
   }
 
   .education {
     margin: 0;
   }
 
-  .education > div + div {
-    margin-block-start: calc(var(--spacing) * 6);
+  .education > div {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    padding-block: calc(var(--spacing) * 5);
+    border-top: 1px solid color-mix(in srgb, var(--color-rule) 55%, transparent);
+  }
+
+  .education > div:first-child {
+    border-top: 0;
+    padding-block-start: 0;
   }
 
   .education dt {
+    font-family: var(--font-display);
     font-weight: 600;
+    font-size: var(--text-h4);
+    letter-spacing: var(--tracking-display);
   }
 
   .education dd {
-    margin: calc(var(--spacing) * 1) 0 0;
-    font-size: var(--text-sm);
+    margin: calc(var(--spacing) * 2) 0 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-label);
     color: var(--color-muted);
   }
 

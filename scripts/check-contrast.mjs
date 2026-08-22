@@ -8,8 +8,19 @@
 import { readFile, readdir } from "node:fs/promises";
 import { join } from "node:path";
 
-const CODE_BG = { light: "#f4f3f0", dark: "#1c1e22" };
+const CODE_BG = { light: "#eef0f2", dark: "#232935" };
 const MIN_RATIO = 4.5;
+
+// The semantic palette. Kept here rather than in a comment so the corrections
+// that were made for contrast reasons are asserted, not merely documented.
+const PALETTE = [
+  ["text on paper", "#0e1116", "#f7f8f9"],
+  ["muted on paper", "#646d79", "#f7f8f9"],
+  ["signal-text on paper", "#9a640b", "#f7f8f9"],
+  ["text on ink", "#f7f8f9", "#1b2028"],
+  ["muted on ink", "#8a94a1", "#1b2028"],
+  ["signal on ink", "#e8a33d", "#1b2028"],
+];
 
 const hexToRgb = (hex) => [1, 3, 5].map((i) => parseInt(hex.slice(i, i + 2), 16));
 const channel = (v) => {
@@ -33,6 +44,18 @@ async function* htmlFiles(dir) {
   }
 }
 
+let paletteFailures = 0;
+
+for (const [name, fg, bg] of PALETTE) {
+  const ratio = contrast(fg, bg);
+  if (ratio < MIN_RATIO) {
+    console.error(`FAIL palette: ${name} = ${ratio.toFixed(2)}:1`);
+    paletteFailures += 1;
+  }
+}
+
+console.log(`palette: ${PALETTE.length} pairs checked`);
+
 const found = { light: new Set(), dark: new Set() };
 
 for await (const file of htmlFiles("dist")) {
@@ -49,13 +72,13 @@ const total = found.light.size + found.dark.size;
 // rather than printing a green tick either way.
 if (total === 0) {
   console.warn(
-    "No highlighted code found in dist/ — nothing was checked. " +
+    "No highlighted code found in dist/ — no syntax colours were checked. " +
       "This is expected while no published article contains a code block.",
   );
-  process.exit(0);
+  process.exit(paletteFailures > 0 ? 1 : 0);
 }
 
-let failures = 0;
+let failures = paletteFailures;
 
 for (const theme of ["light", "dark"]) {
   for (const hex of [...found[theme]].sort()) {
@@ -69,8 +92,8 @@ for (const theme of ["light", "dark"]) {
 }
 
 if (failures > 0) {
-  console.error(`\n${failures} syntax colour(s) below ${MIN_RATIO}:1.`);
+  console.error(`\n${failures} colour pair(s) below ${MIN_RATIO}:1.`);
   process.exit(1);
 }
 
-console.log(`All syntax colours meet ${MIN_RATIO}:1.`);
+console.log(`All colours meet ${MIN_RATIO}:1.`);

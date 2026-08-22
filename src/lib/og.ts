@@ -11,12 +11,12 @@ const require = createRequire(import.meta.url);
 const WIDTH = 1200;
 const HEIGHT = 630;
 
-// Read straight out of the font package at build time. These faces are never
+// Read straight out of the font packages at build time. These faces are never
 // served to a browser, so there is no reason to vendor them into public/.
-// satori cannot decode woff2, which is why this is the static package's woff.
-const loadFont = async (weight: 400 | 600): Promise<ArrayBuffer> => {
+// satori cannot decode woff2, which is why these are the static packages' woff.
+const loadFont = async (family: "archivo" | "source-serif-4", weight: 400 | 600): Promise<ArrayBuffer> => {
   const path = require.resolve(
-    `@fontsource/source-serif-4/files/source-serif-4-latin-${weight}-normal.woff`,
+    `@fontsource/${family}/files/${family}-latin-${weight}-normal.woff`,
   );
   const buffer = await readFile(path);
   return buffer.buffer.slice(
@@ -25,9 +25,7 @@ const loadFont = async (weight: 400 | 600): Promise<ArrayBuffer> => {
   ) as ArrayBuffer;
 };
 
-let fontsPromise: Promise<
-  { name: string; data: ArrayBuffer; weight: 400 | 600; style: "normal" }[]
-> | null = null;
+let fontsPromise: ReturnType<typeof loadAll> | null = null;
 
 const fonts = (): ReturnType<typeof loadAll> => {
   fontsPromise ??= loadAll();
@@ -35,10 +33,16 @@ const fonts = (): ReturnType<typeof loadAll> => {
 };
 
 async function loadAll() {
-  const [regular, semibold] = await Promise.all([loadFont(400), loadFont(600)]);
+  const [display, displayBold, body] = await Promise.all([
+    loadFont("archivo", 400),
+    loadFont("archivo", 600),
+    loadFont("source-serif-4", 400),
+  ]);
+
   return [
-    { name: "Source Serif 4", data: regular, weight: 400 as const, style: "normal" as const },
-    { name: "Source Serif 4", data: semibold, weight: 600 as const, style: "normal" as const },
+    { name: "Archivo", data: display, weight: 400 as const, style: "normal" as const },
+    { name: "Archivo", data: displayBold, weight: 600 as const, style: "normal" as const },
+    { name: "Source Serif 4", data: body, weight: 400 as const, style: "normal" as const },
   ];
 }
 
@@ -50,10 +54,13 @@ const el = (
   children?: unknown,
 ): Record<string, unknown> => ({ type, props: { style, children } });
 
-const BG = "#171a1f";
-const INK = "#f3f1ec";
-const MUTED = "#9aa3b0";
-const ACCENT = "#8fb4f2";
+// The palette, fixed: an OG card renders once and is viewed inside someone
+// else's UI, so it does not follow a theme.
+const INK = "#1b2028";
+const PAPER = "#f7f8f9";
+const SIGNAL = "#e8a33d";
+const MUTED = "#8a94a1";
+const RULE = "#454e5b";
 
 export interface OgOptions {
   title: string;
@@ -71,37 +78,56 @@ export async function renderOgImage({ title, kind }: OgOptions): Promise<Uint8Ar
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        backgroundColor: BG,
-        color: INK,
-        padding: "72px 80px",
-        fontFamily: "Source Serif 4",
+        backgroundColor: INK,
+        color: PAPER,
+        padding: "68px 76px",
+        fontFamily: "Archivo",
       },
       [
-        el("div", { display: "flex", fontSize: 26, letterSpacing: 2, color: ACCENT }, kind.toUpperCase()),
+        // The kicker, set as the utility label the site uses everywhere else.
         el(
           "div",
           {
             display: "flex",
-            fontSize: title.length > 55 ? 62 : 76,
-            fontWeight: 600,
-            lineHeight: 1.15,
-            letterSpacing: -1,
-            maxWidth: 940,
+            fontSize: 22,
+            letterSpacing: 3,
+            color: MUTED,
+            textTransform: "uppercase",
           },
-          title,
+          kind,
+        ),
+        el(
+          "div",
+          { display: "flex", flexDirection: "column" },
+          [
+            el(
+              "div",
+              {
+                display: "flex",
+                fontSize: title.length > 55 ? 60 : 74,
+                fontWeight: 600,
+                lineHeight: 1.05,
+                letterSpacing: -1.6,
+                maxWidth: 960,
+              },
+              title,
+            ),
+            // The one signal rule, matching the one under every page title.
+            el("div", { display: "flex", width: 220, height: 4, backgroundColor: SIGNAL, marginTop: 34 }, ""),
+          ],
         ),
         el(
           "div",
           {
             display: "flex",
             justifyContent: "space-between",
-            fontSize: 26,
+            fontSize: 24,
             color: MUTED,
-            borderTop: `1px solid #2c313a`,
-            paddingTop: 28,
+            borderTop: `1px solid ${RULE}`,
+            paddingTop: 26,
           },
           [
-            el("div", { display: "flex", color: INK }, SITE.name),
+            el("div", { display: "flex", color: PAPER }, SITE.name),
             el("div", { display: "flex" }, SITE.url.replace("https://", "")),
           ],
         ),

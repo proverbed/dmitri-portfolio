@@ -6,90 +6,67 @@ interface Props {
 }
 
 const { entry } = Astro.props;
-const { title, summary, period, tech } = entry.data;
+const { title, summary, period, domain, tech } = entry.data;
 ---
 
-<article class="card">
-  <h2>
-    {/* The heading link is the whole target: no redundant "read more" for a
-        screen reader to announce twice. */}
-    <a href={`/work/${entry.id}`}>{title}</a>
-  </h2>
-  <p class="period">{period}</p>
-  <p class="summary">{summary}</p>
-  <ul class="tech" aria-label="Key technologies">
-    {tech.map((item) => <li>{item}</li>)}
-  </ul>
+{/* A row on an index, not a card: hairline-separated, with the period held in
+    its own column so the four line up as a table of contents would. */}
+<article class="entry">
+  <p class="label period">{period}</p>
+
+  <div>
+    <h2>
+      <a href={`/work/${entry.id}`}>{title}</a>
+    </h2>
+    <p class="domain label">{domain}</p>
+    <p class="summary">{summary}</p>
+    <p class="stack label">{tech.join(" · ")}</p>
+  </div>
 </article>
 
 <style>
-  .card {
-    display: flex;
-    flex-direction: column;
-    gap: calc(var(--spacing) * 2);
-    height: 100%;
-    padding: calc(var(--spacing) * 6);
-    border: 1px solid var(--color-rule);
-    border-radius: var(--radius-md);
-    background-color: var(--color-surface);
-  }
-
-  .card:hover {
-    border-color: var(--color-accent);
-  }
-
-  .card h2 {
-    font-size: var(--text-h3);
-  }
-
-  .card h2 a {
-    color: var(--color-text);
-    text-decoration: none;
-  }
-
-  /* Whole-card hit area without wrapping a block in an anchor. */
-  .card h2 a::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-  }
-
-  .card {
-    position: relative;
-  }
-
-  .card h2 a:hover {
-    color: var(--color-accent);
+  .entry {
+    display: grid;
+    grid-template-columns: 9rem minmax(0, 1fr);
+    column-gap: var(--gutter);
+    padding-block: calc(var(--spacing) * 9);
+    border-top: 1px solid var(--color-rule);
   }
 
   .period {
-    font-size: var(--text-label);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
-    color: var(--color-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .entry h2 {
+    font-size: var(--text-h3);
+  }
+
+  .entry h2 a {
+    box-shadow: none;
+  }
+
+  .entry h2 a:hover {
+    box-shadow: inset 0 -2px 0 0 var(--color-accent);
+  }
+
+  .domain {
+    margin-block-start: calc(var(--spacing) * 2);
   }
 
   .summary {
+    margin-block-start: calc(var(--spacing) * 4);
     color: var(--color-muted);
     line-height: var(--leading-snug);
-    text-wrap: pretty;
   }
 
-  .tech {
-    display: flex;
-    flex-wrap: wrap;
-    gap: calc(var(--spacing) * 2);
-    margin: auto 0 0;
-    padding: calc(var(--spacing) * 4) 0 0;
-    list-style: none;
-    font-size: var(--text-label);
-    color: var(--color-muted);
+  .stack {
+    margin-block-start: calc(var(--spacing) * 4);
   }
 
-  .tech li {
-    padding: calc(var(--spacing) * 0.5) calc(var(--spacing) * 2);
-    border: 1px solid var(--color-rule);
-    border-radius: var(--radius-sm);
-    font-family: var(--font-mono);
+  @media (max-width: 48rem) {
+    .entry {
+      grid-template-columns: minmax(0, 1fr);
+      row-gap: calc(var(--spacing) * 3);
+    }
   }
 </style>

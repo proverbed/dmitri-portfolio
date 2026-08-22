@@ -3,9 +3,9 @@ import type { MarkdownHeading } from "astro";
 import type { CollectionEntry } from "astro:content";
 
 import Base from "./Base.astro";
-import Prose from "../components/Prose.astro";
-import Tags from "../components/Tags.astro";
 import CodeCopy from "../components/CodeCopy.astro";
+import Prose from "../components/Prose.astro";
+import SpecBlock, { type SpecRow } from "../components/SpecBlock.astro";
 import Toc from "../components/Toc.astro";
 import { formatDate, isoDate } from "../lib/format";
 import { SITE } from "../lib/site";
@@ -28,6 +28,28 @@ const { title, description, publishDate, updatedDate, tags, draft } = entry.data
 
 const canonical = new URL(`/writing/${entry.id}`, Astro.site ?? SITE.url).href;
 const ogImage = new URL(`/og/${entry.id}.png`, Astro.site ?? SITE.url).href;
+
+const spec: SpecRow[] = [
+  {
+    label: "Published",
+    value: formatDate(publishDate),
+    datetime: isoDate(publishDate),
+    mono: true,
+  },
+  ...(updatedDate
+    ? [
+        {
+          label: "Updated",
+          value: formatDate(updatedDate),
+          datetime: isoDate(updatedDate),
+          mono: true,
+        },
+      ]
+    : []),
+  { label: "Reading", value: `${minutes} min`, mono: true },
+  ...(tags.length > 0 ? [{ label: "Tags", value: tags.join(" · "), mono: true }] : []),
+  ...(draft ? [{ label: "Status", value: "Draft — not published", mono: true }] : []),
+];
 
 const jsonLd = {
   "@context": "https://schema.org",
@@ -54,7 +76,7 @@ const jsonLd = {
   updatedDate={updatedDate}
   noindex={draft}
   ogImage={ogImage}
-  width="measure"
+  width="annotated"
 >
   <script
     slot="head"
@@ -63,100 +85,97 @@ const jsonLd = {
     set:html={JSON.stringify(jsonLd)}
   />
 
-  <article>
-    <header class="article-header">
-      {draft && <p class="draft-flag">Draft — not published</p>}
-
+  <article class="layout">
+    <header class="head">
+      <p class="label kicker">Writing</p>
       <h1>{title}</h1>
-      <p class="article-description">{description}</p>
-
-      <p class="article-meta">
-        <time datetime={isoDate(publishDate)}>{formatDate(publishDate)}</time>
-        <span aria-hidden="true">·</span>
-        <span>{minutes} min read</span>
-        {
-          updatedDate && (
-            <>
-              <span aria-hidden="true">·</span>
-              <span>
-                Updated <time datetime={isoDate(updatedDate)}>{formatDate(updatedDate)}</time>
-              </span>
-            </>
-          )
-        }
-      </p>
-
-      <Tags tags={tags} linked={!draft} />
+      <p class="lede">{description}</p>
     </header>
 
-    <Toc headings={headings} />
+    {/* The margin carries what a manual would annotate with: the specification,
+        then the contents. Both collapse above the text on narrow screens. */}
+    <aside class="margin">
+      <SpecBlock rows={spec} label="Article specification" />
+      <Toc headings={headings} />
+    </aside>
 
-    <Prose>
-      <slot />
-    </Prose>
+    <div class="body">
+      <Prose>
+        <slot />
+      </Prose>
+
+      {
+        (prev || next) && (
+          <nav class="pagination" aria-label="More writing">
+            <div>
+              {prev && (
+                <a href={`/writing/${prev.slug}`} rel="prev">
+                  <span class="label">Previous</span>
+                  {prev.title}
+                </a>
+              )}
+            </div>
+            <div class="pagination-next">
+              {next && (
+                <a href={`/writing/${next.slug}`} rel="next">
+                  <span class="label">Next</span>
+                  {next.title}
+                </a>
+              )}
+            </div>
+          </nav>
+        )
+      }
+    </div>
   </article>
 
   <CodeCopy />
-
-  {
-    (prev || next) && (
-      <nav class="pagination" aria-label="More writing">
-        <div>
-          {prev && (
-            <a href={`/writing/${prev.slug}`} rel="prev">
-              <span class="pagination-label">Previous</span>
-              {prev.title}
-            </a>
-          )}
-        </div>
-        <div class="pagination-next">
-          {next && (
-            <a href={`/writing/${next.slug}`} rel="next">
-              <span class="pagination-label">Next</span>
-              {next.title}
-            </a>
-          )}
-        </div>
-      </nav>
-    )
-  }
 </Base>
 
 <style>
-  .article-header {
-    margin-block-end: calc(var(--spacing) * 10);
+  .layout {
+    display: grid;
+    grid-template-columns: var(--margin-column) minmax(0, var(--container-measure));
+    column-gap: var(--gutter);
   }
 
-  .article-header h1 {
+  .head {
+    grid-column: 1 / -1;
+    margin-block-end: calc(var(--spacing) * 12);
+  }
+
+  .kicker {
+    margin-block-end: calc(var(--spacing) * 5);
+  }
+
+  .head h1 {
     font-size: var(--text-h1);
   }
 
-  .article-description {
-    margin-block-start: calc(var(--spacing) * 4);
-    font-size: var(--text-lg);
+  .lede {
+    margin-block-start: calc(var(--spacing) * 6);
+    max-width: var(--container-measure);
+    font-size: var(--text-lede);
     line-height: var(--leading-snug);
     color: var(--color-muted);
-    text-wrap: pretty;
   }
 
-  .article-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: calc(var(--spacing) * 2);
-    margin-block: calc(var(--spacing) * 5) calc(var(--spacing) * 4);
-    font-size: var(--text-sm);
-    color: var(--color-muted);
+  /* One rule under the title, in signal — the only place amber crosses the
+     full measure on any page. */
+  .head::after {
+    content: "";
+    display: block;
+    height: 2px;
+    margin-block-start: calc(var(--spacing) * 8);
+    background-color: var(--color-accent);
   }
 
-  .draft-flag {
-    display: inline-block;
-    margin-block-end: calc(var(--spacing) * 4);
-    padding: calc(var(--spacing) * 1) calc(var(--spacing) * 3);
-    border: 1px solid oklch(0.62 0.16 45);
-    border-radius: var(--radius-sm);
-    font-size: var(--text-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
+  .margin {
+    grid-column: 1;
+  }
+
+  .body {
+    grid-column: 2;
   }
 
   .pagination {
@@ -165,7 +184,7 @@ const jsonLd = {
     margin-block-start: calc(var(--spacing) * 16);
     padding-block-start: calc(var(--spacing) * 6);
     border-top: 1px solid var(--color-rule);
-    font-size: var(--text-sm);
+    font-size: var(--text-small);
   }
 
   @media (min-width: 40rem) {
@@ -180,20 +199,32 @@ const jsonLd = {
 
   .pagination a {
     display: block;
-    text-decoration: none;
+    box-shadow: none;
     line-height: var(--leading-snug);
   }
 
   .pagination a:hover {
-    text-decoration: underline;
+    box-shadow: none;
+    color: var(--color-accent-text);
   }
 
-  .pagination-label {
+  .pagination .label {
     display: block;
-    color: var(--color-muted);
-    font-size: var(--text-xs);
-    text-transform: uppercase;
-    letter-spacing: 0.06em;
     margin-block-end: calc(var(--spacing) * 1);
+  }
+
+  @media (max-width: 64rem) {
+    .layout {
+      grid-template-columns: minmax(0, 1fr);
+    }
+
+    .margin,
+    .body {
+      grid-column: 1;
+    }
+
+    .margin {
+      margin-block-end: calc(var(--spacing) * 12);
+    }
   }
 </style>
