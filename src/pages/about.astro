@@ -6,6 +6,7 @@ import { EDUCATION, ROLES, UNIVERSITY } from "../lib/cv";
 import { SITE, SOCIALS } from "../lib/site";
 
 const currentRole = ROLES[0];
+const ogImage = new URL("/og/site/about.png", Astro.site ?? SITE.url).href;
 
 // Assembled as one HTML string so no JSX whitespace lands between the last link
 // and the full stop. No address here by choice: an email address on a public
@@ -36,8 +37,9 @@ const jsonLd = {
 
 <Base
   title="About"
-  description="Full-stack engineer in Cape Town, fifteen years in, working mostly in TypeScript across the stack."
+  description="Senior engineer in Cape Town, fifteen years in, working mostly in TypeScript across the stack."
   width="annotated"
+  ogImage={ogImage}
 >
   <script
     slot="head"
@@ -53,13 +55,13 @@ const jsonLd = {
   <Section label="Profile" id="profile" first>
     <div class="bio">
     <p>
-      I'm a full-stack engineer based in Cape Town, fifteen years in, working
+      I'm a senior engineer based in Cape Town, fifteen years in, working
       mostly in TypeScript across the stack — React and Next.js on the front, AWS
       serverless behind.
     </p>
 
     <p>
-      I'm currently a Senior Engineer at Zebra Renewables, working on the UK side
+      I'm at Zebra Renewables, working on the UK side
       of the business. I'm a core engineer on a commercial multi-tenant commerce
       and ERP platform, where I designed the multi-tenant authentication, built
       the per-website static-site build pipeline, and redesigned the CI/CD
