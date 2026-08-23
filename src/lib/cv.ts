@@ -71,8 +71,9 @@ export const ROLES: readonly Role[] = [
     end: "2017-09",
     location: "Cape Town",
     summary:
-      "Enterprise system for a UK nursing agency, covering the full cycle from booking candidates onto shifts through to paying them.",
+      "Enterprise system for a UK nursing agency, covering the full cycle from booking candidates onto shifts through to paying them — including the compliance system that decided who could legally be booked.",
     highlights: [
+      "Took ownership of the compliance system that determined which candidates could legally be booked. Eligibility was derived from a set of documents staying valid; a nightly run re-evaluated a register of thousands of candidates and removed anyone whose documents had lapsed, blocking them from shifts until restored, with escalating warnings ahead of expiry. I didn't build it — I became the person who understood it, extending the ruleset as legislation changed and tracing individual compliance decisions back to their cause when the business asked.",
       "Backend development in PHP and Node.js across the agency's product suite",
       "Technical lead for two developers: specified and broke down tickets, and was their first point of reference",
       "Database administration, web server maintenance, and business reporting for non-technical users",
