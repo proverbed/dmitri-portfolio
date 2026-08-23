@@ -1,54 +1,92 @@
 ---
-title: "Enterprise system for a nursing agency"
-summary: "Five and a half years on a compliance-sensitive system covering booking candidates onto shifts through to paying them."
+title: "Compliance as a gate on who can work"
+summary: "A nightly job that decided which nurses could legally be booked, and had to justify every decision to a human."
 period: "2012–2017"
-domain: "Agency staff, booking to payroll"
-constraint: "Statutory pay and scheduling rules"
-tech: ["PHP", "Node.js", "MySQL"]
+domain: "Nurses, shifts and the rules between them"
+scale: "Thousands of candidates"
+constraint: "Regulated eligibility · decisions had to be explainable"
+tech: ["PHP", "Node.js", "MySQL", "MongoDB"]
 order: 4
 relatedWriting: []
 ---
 
 ## Context
 
-An enterprise system for a UK nursing agency, covering the full cycle: booking
-candidates onto shifts, through scheduling, through to paying them.
+An enterprise system for a UK nursing agency, covering the full cycle from
+booking a candidate onto a shift through to paying them.
 
-A suite of products rather than one application, used daily by non-technical
-staff whose work the system either supported or obstructed.
+The part that mattered most was the compliance system. A nurse could only be
+booked if they were compliant, and compliance was not a flag someone set — it
+was a derived state, computed from whether a set of documents were all
+currently valid. Let one lapse and the person stopped being bookable.
+
+The register ran to thousands of candidates, each with their own documents and
+their own expiry dates, re-evaluated every night.
+
+I did not build that system. I inherited it, and became the person who
+understood it.
 
 ## Constraints
 
-A compliance-sensitive domain with statutory pay and scheduling rules. Getting
-either wrong has real consequences — for the agency, and for someone's pay
-packet.
+The rules were not ours. They came from legislation and from the agency's own
+obligations, and they changed. Whatever the system did had to be able to
+change with them, which meant understanding it well enough to extend it rather
+than well enough to keep it running.
 
-Rules of that kind are not requirements you implement once. They change outside
-your control, and the system has to be shaped so that a change to a rule is a
-change in one place.
+Compliance also had to be explainable. When a consultant asked why a
+particular candidate had come off the board, "the system decided" was not an
+answer. Someone's ability to earn that week depended on it, and the reason had
+to be traceable to a specific document and a specific date.
+
+And the system worked against the commercial grain. The agency made money by
+placing nurses; this thing took nurses off the board every night. That tension
+was the point of it — but it meant every change was scrutinised by people
+whose targets it affected.
 
 ## What I built
 
-Backend functionality across a range of products in the agency's suite.
+Backend development in PHP and Node.js across the agency's product suite, with
+MySQL and MongoDB behind it.
 
-Database administration and web server maintenance — the operational side as
-well as the development side.
+Within the compliance system: extending the rules as requirements changed, and
+tracing individual compliance decisions back to their cause when the business
+asked.
 
-Business reporting for non-technical users, so that answering a question about
-the business did not require an engineer.
+Database administration, web server maintenance, and business reporting in
+Jasper for non-technical users.
+
+Technical lead for two developers — one intermediate, one junior. I specified
+and broke tickets down before handing them over, worked through the unknowns
+with them up front, and was their first point of reference when something
+didn't behave.
 
 ## Decisions and trade-offs
 
-Requirements came directly from end users, and I translated them into functional
-specifications working alongside the architect and product owner. The value in
-that was in going back to the person who asked: what a user requests and what a
-user needs are frequently different, and the difference only surfaces in
-conversation.
+**Expiry was gradual, not sudden.** The system warned well ahead of a document
+lapsing, then again as the date approached, with the interface reflecting the
+changing status throughout. Technically the nightly evaluation is the same
+either way — the state either holds or it doesn't. The difference is entirely
+in whether the person on the other end has time to act. A system that is
+merely correct tells you on the day; one that is usable tells you months out
+and keeps telling you.
+
+**Derived state rather than a stored flag.** Compliance was computed from the
+underlying documents rather than set by hand. That makes it harder to be wrong
+quietly — nobody can tick a box — but it means the answer is only ever as good
+as the evaluation, and every rule change reaches thousands of people at once.
+Adding a rule was never a small change.
+
+**Explainability as a requirement rather than a debugging aid.** Because the
+business had to be able to ask "why this person, why now," the system's
+reasoning had to survive contact with someone who didn't read code. That
+shaped what was worth building far more than performance did.
 
 ## Outcome
 
-Five and a half years on the system.
+Five and a half years on the system, and my first experience leading other
+engineers.
 
-It was also my first experience leading other developers — specifying and
-breaking down work for two engineers, which is a different skill from doing the
-work and one I was not immediately good at.
+It is also where I learned to be comfortable with software that says no. The
+compliance system existed to refuse things, and refusing correctly turned out
+to be a harder problem than allowing correctly — a lesson I have used in every
+regulated or money-carrying system since.

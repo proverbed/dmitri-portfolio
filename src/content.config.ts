@@ -22,6 +22,8 @@ const work = defineCollection({
     period: z.string().min(1),
     /** What the system was and who used it — one line for the spec block. */
     domain: z.string().min(1).max(80),
+    /** Optional scale figure for the spec block — a headcount or volume. */
+    scale: z.string().min(1).max(80).optional(),
     /** The constraint that defined the work — one line for the spec block. */
     constraint: z.string().min(1).max(80),
     /** The two or three that matter — not an inventory. */

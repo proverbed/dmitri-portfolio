@@ -12,7 +12,7 @@ interface Props {
 }
 
 const { entry } = Astro.props;
-const { title, summary, period, domain, constraint, tech, relatedWriting } = entry.data;
+const { title, summary, period, domain, scale, constraint, tech, relatedWriting } = entry.data;
 
 // Cross-links resolve against the writing collection at build time. A slug that
 // names no article is a mistake in this file and fails the build; a slug that
@@ -36,6 +36,7 @@ const ogImage = new URL(`/og/work/${entry.id}.png`, Astro.site ?? SITE.url).href
 const spec: SpecRow[] = [
   { label: "Period", value: period, mono: true },
   { label: "Domain", value: domain },
+  ...(scale ? [{ label: "Scale", value: scale }] : []),
   { label: "Constraint", value: constraint },
   { label: "Stack", value: tech.join(" · "), mono: true },
 ];
