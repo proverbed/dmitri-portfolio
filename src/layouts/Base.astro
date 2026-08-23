@@ -106,9 +106,7 @@ const nav = NAV.filter((item) => item.href !== "/writing" || hasPublishedWriting
 
       <footer class="colophon">
         <p class="label">&copy; {new Date().getFullYear()} {SITE.name}</p>
-        <p class="label">
-          <a href="/rss.xml">RSS</a>
-        </p>
+        {/* TODO: restore the RSS link once the first article publishes. */}
       </footer>
     </div>
 
