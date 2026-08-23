@@ -2,7 +2,7 @@
 title: "Multi-tenant commerce and ERP platform"
 summary: "Rebuilding a proof-of-concept-turned-production platform into a multi-tenant estate, while the original kept trading."
 period: "2025–present"
-domain: "Subscription clients, one estate"
+domain: "Merchants trading online"
 constraint: "Predecessor trading throughout"
 tech: ["TypeScript", "AWS serverless", "Next.js"]
 order: 1
@@ -18,7 +18,8 @@ fulfilment, accounting integrations — sold on a subscription.
 It replaced an earlier system that had begun life as a proof of concept and,
 without anyone deciding it should, become the company's live production
 platform. That history is the whole shape of the project: the thing being
-replaced was not a prototype anyone could switch off.
+replaced was not a prototype anyone could switch off. I'm a core engineer on
+the rebuild, and I also line-manage two junior engineers on the team.
 
 ## Constraints
 
@@ -72,8 +73,11 @@ problem and became an ordinary data problem.
 
 ## Outcome
 
-Delivered to production while the predecessor continued trading throughout. The
-work consolidated the predecessor's repositories into a single estate — a net
-removal of code rather than an addition.
+Delivered to production in under five months, while the predecessor continued
+trading throughout. The work consolidated the predecessor's repositories into a
+single estate — a net removal of code rather than an addition.
 
-I also line-manage two junior engineers on this team.
+We built the replacement alongside the original, tested it separately, and once
+we trusted it, moved tenants across one at a time rather than switching
+everything at once.
+
