@@ -14,7 +14,10 @@ const HEIGHT = 630;
 // Read straight out of the font packages at build time. These faces are never
 // served to a browser, so there is no reason to vendor them into public/.
 // satori cannot decode woff2, which is why these are the static packages' woff.
-const loadFont = async (family: "archivo" | "source-serif-4", weight: 400 | 600): Promise<ArrayBuffer> => {
+const loadFont = async (
+  family: "archivo" | "source-serif-4" | "jetbrains-mono",
+  weight: 400 | 600,
+): Promise<ArrayBuffer> => {
   const path = require.resolve(
     `@fontsource/${family}/files/${family}-latin-${weight}-normal.woff`,
   );
@@ -33,16 +36,18 @@ const fonts = (): ReturnType<typeof loadAll> => {
 };
 
 async function loadAll() {
-  const [display, displayBold, body] = await Promise.all([
+  const [display, displayBold, body, mono] = await Promise.all([
     loadFont("archivo", 400),
     loadFont("archivo", 600),
     loadFont("source-serif-4", 400),
+    loadFont("jetbrains-mono", 400),
   ]);
 
   return [
     { name: "Archivo", data: display, weight: 400 as const, style: "normal" as const },
     { name: "Archivo", data: displayBold, weight: 600 as const, style: "normal" as const },
     { name: "Source Serif 4", data: body, weight: 400 as const, style: "normal" as const },
+    { name: "JetBrains Mono", data: mono, weight: 400 as const, style: "normal" as const },
   ];
 }
 
@@ -55,20 +60,17 @@ const el = (
 ): Record<string, unknown> => ({ type, props: { style, children } });
 
 // The palette, fixed: an OG card renders once and is viewed inside someone
-// else's UI, so it does not follow a theme.
+// else's UI, so it does not follow a theme. Paper, not ink — the card should
+// read as the same object as the page it represents.
 const INK = "#1b2028";
 const PAPER = "#f7f8f9";
 const SIGNAL = "#e8a33d";
-const MUTED = "#8a94a1";
-const RULE = "#454e5b";
 
 export interface OgOptions {
   title: string;
-  /** Small line above the title: "Writing" or "Case study". */
-  kind: string;
 }
 
-export async function renderOgImage({ title, kind }: OgOptions): Promise<Uint8Array> {
+export async function renderOgImage({ title }: OgOptions): Promise<Uint8Array> {
   const svg = await satori(
     el(
       "div",
@@ -78,57 +80,42 @@ export async function renderOgImage({ title, kind }: OgOptions): Promise<Uint8Ar
         display: "flex",
         flexDirection: "column",
         justifyContent: "space-between",
-        backgroundColor: INK,
-        color: PAPER,
+        backgroundColor: PAPER,
+        color: INK,
         padding: "68px 76px",
         fontFamily: "Archivo",
       },
       [
-        // The kicker, set as the utility label the site uses everywhere else.
         el(
           "div",
           {
             display: "flex",
-            fontSize: 22,
-            letterSpacing: 3,
-            color: MUTED,
-            textTransform: "uppercase",
+            fontSize: title.length > 55 ? 60 : 74,
+            fontWeight: 600,
+            lineHeight: 1.05,
+            letterSpacing: -1.6,
+            maxWidth: 1000,
           },
-          kind,
+          title,
         ),
         el(
           "div",
           { display: "flex", flexDirection: "column" },
           [
+            // The hairline rule, matching the one under every page title.
+            el("div", { display: "flex", width: "100%", height: 1, backgroundColor: SIGNAL }, ""),
             el(
               "div",
               {
                 display: "flex",
-                fontSize: title.length > 55 ? 60 : 74,
-                fontWeight: 600,
-                lineHeight: 1.05,
-                letterSpacing: -1.6,
-                maxWidth: 960,
+                fontFamily: "JetBrains Mono",
+                fontSize: 22,
+                letterSpacing: 1,
+                textTransform: "uppercase",
+                marginTop: 28,
               },
-              title,
+              SITE.name,
             ),
-            // The one signal rule, matching the one under every page title.
-            el("div", { display: "flex", width: 220, height: 4, backgroundColor: SIGNAL, marginTop: 34 }, ""),
-          ],
-        ),
-        el(
-          "div",
-          {
-            display: "flex",
-            justifyContent: "space-between",
-            fontSize: 24,
-            color: MUTED,
-            borderTop: `1px solid ${RULE}`,
-            paddingTop: 26,
-          },
-          [
-            el("div", { display: "flex", color: PAPER }, SITE.name),
-            el("div", { display: "flex" }, SITE.url.replace("https://", "")),
           ],
         ),
       ],

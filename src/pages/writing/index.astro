@@ -3,15 +3,18 @@ import Base from "../../layouts/Base.astro";
 import { formatDate, isoDate } from "../../lib/format";
 import { readingTime } from "../../lib/reading-time";
 import { collectTags, getArticles } from "../../lib/writing";
+import { SITE } from "../../lib/site";
 
 const articles = await getArticles();
 const tags = collectTags(articles);
+const ogImage = new URL("/og/site/writing.png", Astro.site ?? SITE.url).href;
 ---
 
 <Base
   title="Writing"
   description="Essays on shipping software: edge deployment, verification, and infrastructure at its limits."
   width="annotated"
+  ogImage={ogImage}
 >
   <div class="layout">
     <header class="head">

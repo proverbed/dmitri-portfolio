@@ -9,9 +9,10 @@ import { getCaseStudies } from "../lib/work";
 const articles = (await getArticles()).slice(0, 3);
 const hasPublishedWriting = (await getPublishedArticles()).length > 0;
 const studies = await getCaseStudies();
+const ogImage = new URL("/og/site/index.png", Astro.site ?? SITE.url).href;
 ---
 
-<Base title={SITE.name} description={SITE.description} width="annotated">
+<Base title={SITE.name} description={SITE.description} width="annotated" ogImage={ogImage}>
   {/* The masthead already carries the name. The largest type on the page is
       the claim, which is the thing a reader is here to evaluate. */}
   <header class="head">
@@ -26,8 +27,10 @@ const studies = await getCaseStudies();
     multi-tenant authentication, the per-tenant site build pipeline and the CI/CD
     promotion flow. Before that I spent four years on inflight retail software
     deployed to hardware on aircraft, and five years running my own e-commerce
-    business. I write here occasionally about the parts of the work that were
-    harder than they looked.
+    business.
+    {/* TODO: restore once something is published —
+       "I write here occasionally about the parts of the work that were
+       harder than they looked." */}
   </p>
 
   <Section label="Selected work" id="selected-work" first>

@@ -2,14 +2,17 @@
 import Base from "../../layouts/Base.astro";
 import WorkCard from "../../components/WorkCard.astro";
 import { getCaseStudies } from "../../lib/work";
+import { SITE } from "../../lib/site";
 
 const studies = await getCaseStudies();
+const ogImage = new URL("/og/site/work.png", Astro.site ?? SITE.url).href;
 ---
 
 <Base
   title="Work"
   description="Selected work: a multi-tenant commerce platform, an aircraft edge fleet, a retail business, and an enterprise scheduling system."
   width="annotated"
+  ogImage={ogImage}
 >
   <header class="head">
     <h1>Work</h1>
