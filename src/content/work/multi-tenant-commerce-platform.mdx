@@ -21,6 +21,9 @@ platform. That history is the whole shape of the project: the thing being
 replaced was not a prototype anyone could switch off. I'm a core engineer on
 the rebuild, and I also line-manage two junior engineers on the team.
 
+The two halves ran in parallel for a year: keeping the live system running and
+fixed, while building and hardening the thing that would replace it.
+
 ## Constraints
 
 The predecessor carried live revenue for the entire duration of the rebuild. It
@@ -71,13 +74,26 @@ that it removed the hardest part of the data migration entirely: there were no
 password hashes to carry across, so user migration stopped being a security
 problem and became an ordinary data problem.
 
+**Two classes of silent failure, found and made preventable.** A tenant
+storefront rendering a competitor's brand colour, because an unemitted design
+token fell through to a hardcoded literal. And skipped end-to-end specs
+reporting as passes — a sweep found that most of what looked like missing
+coverage was working code with a broken signal. Both were fixed at source and
+written into repo guidance, because the second time is what matters.
+
 ## Outcome
 
 Delivered to production in under five months, while the predecessor continued
-trading throughout. The work consolidated the predecessor's repositories into a
+trading throughout. The work consolidated 13 predecessor repositories into a
 single estate — a net removal of code rather than an addition.
 
-We built the replacement alongside the original, tested it separately, and once
-we trusted it, moved tenants across one at a time rather than switching
-everything at once.
+The migration itself ran as a single cutover: a script read from the
+predecessor's tables, transformed the data and wrote it into the new estate.
+Customer accounts were recreated in the new identity pool rather than
+exported — a consequence of the passwordless chain that made the hardest part
+of the migration disappear.
+
+The expertise built fixing the old system is what made the new one fast. Same
+domain, second system, one person holding both the failure modes and the
+architecture.
 
